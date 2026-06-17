@@ -1,0 +1,277 @@
+<div class="min-h-screen flex flex-col bg-slate-50"
+     data-controller="multi-step-form">
+
+  <%# ── Header ── %>
+  <header class="bg-violet-50 border-b border-slate-200">
+    <div class="max-w-5xl mx-auto px-6 py-5 flex items-center justify-center gap-2.5">
+      <div class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center shrink-0">
+        <span class="text-indigo-500 font-bold text-sm leading-none">F</span>
+      </div>
+      <span class="text-indigo-600 font-bold text-lg tracking-tight">FreelaHub</span>
+    </div>
+  </header>
+
+  <%# ── Conteúdo ── %>
+  <main class="flex-1 flex items-start justify-center px-4 py-16">
+    <div class="w-full max-w-md">
+
+      <%# Barra de progresso global %>
+      <div class="flex items-center justify-between mb-2">
+        <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Create your account</h1>
+        <span class="text-sm font-medium text-slate-500" data-multi-step-form-target="progressLabel">
+          Step 1 of 3
+        </span>
+      </div>
+      <div class="flex gap-1.5 mb-8">
+        <% 3.times do |i| %>
+          <div class="h-1.5 flex-1 rounded-full <%= i.zero? ? 'bg-indigo-500' : 'bg-slate-200' %> transition-colors"
+               data-multi-step-form-target="progressBar"
+               data-step="<%= i + 1 %>"></div>
+        <% end %>
+      </div>
+
+      <%# ── Form único do Devise; navegação interna via JS ── %>
+      <%= form_for(resource, as: resource_name, url: registration_path(resource_name),
+            data: { multi_step_form_target: "form", action: "submit->multi-step-form#beforeSubmit" }) do |f| %>
+
+        <%# ============================================== %>
+        <%# STEP 1 — Personal Information                  %>
+        <%# ============================================== %>
+        <div class="bg-white rounded-2xl border border-slate-200 p-8"
+             data-multi-step-form-target="step" data-step="1">
+
+          <h2 class="text-xl font-semibold text-slate-900">Personal Information</h2>
+          <p class="text-slate-500 text-sm mt-1.5 mb-6 leading-relaxed">
+            Please provide your legal name and work email to begin your journey.
+          </p>
+
+          <div class="mb-5" data-field-wrapper>
+            <label class="block text-sm font-medium text-slate-700 mb-1.5">Full Name</label>
+            <%= f.text_field :full_name,
+                  placeholder: "Enter your full name",
+                  autofocus: true,
+                  data: { multi_step_form_target: "fullName" },
+                  class: "w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 focus:bg-white transition" %>
+            <p class="hidden text-xs text-red-500 mt-1.5" data-field-error></p>
+          </div>
+
+          <div class="mb-6" data-field-wrapper>
+            <label class="block text-sm font-medium text-slate-700 mb-1.5">Email Address</label>
+            <%= f.email_field :email,
+                  placeholder: "name@company.com",
+                  autocomplete: "email",
+                  data: { multi_step_form_target: "email" },
+                  class: "w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 focus:bg-white transition" %>
+            <p class="hidden text-xs text-red-500 mt-1.5" data-field-error></p>
+          </div>
+
+          <button type="button"
+                  data-action="multi-step-form#next"
+                  class="w-full flex items-center justify-center gap-2 py-3 bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 text-white text-sm font-semibold rounded-xl transition shadow-sm shadow-indigo-200">
+            Continue
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
+            </svg>
+          </button>
+
+          <div class="flex items-center gap-3 my-5 text-slate-300 text-xs">
+            <span class="flex-1 h-px bg-slate-200"></span>
+          </div>
+
+          <p class="text-center text-sm text-slate-500">
+            Already have an account?
+            <%= link_to "Sign in", new_user_session_path, class: "text-indigo-500 font-semibold hover:text-indigo-700 transition" %>
+          </p>
+        </div>
+
+        <%# ============================================== %>
+        <%# STEP 2 — How will you use FreelaHub?            %>
+        <%# ============================================== %>
+        <div class="hidden" data-multi-step-form-target="step" data-step="2">
+
+          <h2 class="text-xl font-semibold text-slate-900 text-center mb-6">How will you use FreelaHub?</h2>
+
+          <%# Campo oculto que guarda o role selecionado %>
+          <%= f.hidden_field :role, data: { multi_step_form_target: "roleInput" } %>
+
+          <div class="grid grid-cols-2 gap-4 mb-2">
+
+            <div class="border border-slate-200 rounded-2xl p-5 cursor-pointer hover:border-indigo-300 transition"
+                 data-multi-step-form-target="roleCard"
+                 data-role="student"
+                 data-action="click->multi-step-form#selectRole">
+              <div class="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l6.16-3.42A12.083 12.083 0 0118 18.16V21M12 14L5.84 10.58A12.083 12.083 0 006 18.16V21"/>
+                </svg>
+              </div>
+              <h3 class="font-semibold text-slate-900 mb-1">Student</h3>
+              <p class="text-sm text-slate-500 leading-relaxed">
+                I want to learn, collaborate and find opportunities.
+              </p>
+            </div>
+
+            <div class="border border-slate-200 rounded-2xl p-5 cursor-pointer hover:border-indigo-300 transition"
+                 data-multi-step-form-target="roleCard"
+                 data-role="contractor"
+                 data-action="click->multi-step-form#selectRole">
+              <div class="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M20 7h-3V5a2 2 0 00-2-2H9a2 2 0 00-2 2v2H4a1 1 0 00-1 1v3a1 1 0 001 1h16a1 1 0 001-1V8a1 1 0 00-1-1z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 12v6a2 2 0 002 2h14a2 2 0 002-2v-6"/>
+                </svg>
+              </div>
+              <h3 class="font-semibold text-slate-900 mb-1">Contractor</h3>
+              <p class="text-sm text-slate-500 leading-relaxed">
+                I want to publish projects and hire talent.
+              </p>
+            </div>
+          </div>
+
+          <p class="hidden text-xs text-red-500 mb-4" data-step-two-error></p>
+
+          <div class="border-t border-slate-200 pt-5 mt-2 flex items-center justify-between">
+            <button type="button"
+                    data-action="multi-step-form#back"
+                    class="flex items-center gap-1.5 text-sm font-medium text-slate-600 hover:text-slate-900 transition">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/>
+              </svg>
+              Back
+            </button>
+
+            <div class="flex items-center gap-4">
+              <span class="text-sm text-slate-400 hidden sm:inline">You can change this later in settings.</span>
+              <button type="button"
+                      data-action="multi-step-form#next"
+                      class="px-5 py-2.5 bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 text-white text-sm font-semibold rounded-xl transition shadow-sm shadow-indigo-200">
+                Continue
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <%# ============================================== %>
+        <%# STEP 3 — Security Setup                        %>
+        <%# ============================================== %>
+        <div class="hidden" data-multi-step-form-target="step" data-step="3">
+          <div class="bg-white rounded-2xl border border-slate-200 p-8">
+
+            <div class="flex items-center justify-between mb-6">
+              <span class="text-xs font-bold text-indigo-500 tracking-wide">SECURITY SETUP</span>
+            </div>
+
+            <%# Senha %>
+            <div class="mb-1.5">
+              <label class="block text-sm font-medium text-slate-700 mb-1.5">Password</label>
+              <div class="relative">
+                <%= f.password_field :password,
+                      placeholder: "Min. 12 characters",
+                      autocomplete: "new-password",
+                      data: {
+                        multi_step_form_target: "password",
+                        action: "input->multi-step-form#checkPasswordStrength"
+                      },
+                      class: "w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 focus:bg-white transition pr-11" %>
+                <button type="button"
+                        data-multi-step-form-target="passwordToggle"
+                        data-action="multi-step-form#togglePassword"
+                        data-visible="false"
+                        class="absolute inset-y-0 right-3 flex items-center text-slate-400 hover:text-slate-600 transition">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <%# Indicador de força %>
+            <div class="flex gap-1.5 mb-2 mt-3">
+              <% 4.times do |i| %>
+                <div class="h-1 flex-1 rounded-full bg-slate-200 transition-colors"
+                     data-multi-step-form-target="passwordStrengthBar"></div>
+              <% end %>
+            </div>
+            <p class="text-xs text-slate-500 mb-6">
+              Password strength:
+              <span class="font-semibold text-slate-400" data-multi-step-form-target="passwordStrengthLabel">—</span>
+            </p>
+
+            <%# Confirmação de senha %>
+            <div class="mb-6">
+              <label class="block text-sm font-medium text-slate-700 mb-1.5">Confirm Password</label>
+              <div class="relative">
+                <%= f.password_field :password_confirmation,
+                      placeholder: "Repeat password",
+                      autocomplete: "new-password",
+                      data: { multi_step_form_target: "passwordConfirmation" },
+                      class: "w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 focus:bg-white transition pr-11" %>
+                <button type="button"
+                        data-multi-step-form-target="passwordConfirmToggle"
+                        data-action="multi-step-form#togglePasswordConfirmation"
+                        data-visible="false"
+                        class="absolute inset-y-0 right-3 flex items-center text-slate-400 hover:text-slate-600 transition">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <%# Termos %>
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-6">
+              <label class="flex items-start gap-3 cursor-pointer">
+                <input type="checkbox"
+                       data-multi-step-form-target="terms"
+                       class="mt-0.5 w-4 h-4 rounded border-slate-300 text-indigo-500 focus:ring-indigo-400 cursor-pointer shrink-0">
+                <span class="text-sm text-slate-600 leading-relaxed">
+                  I agree to FreelaHub's
+                  <%= link_to "Terms of Service", "#", class: "text-indigo-500 font-medium hover:text-indigo-700" %>
+                  and
+                  <%= link_to "Privacy Policy", "#", class: "text-indigo-500 font-medium hover:text-indigo-700" %>,
+                  including how we use data.
+                </span>
+              </label>
+              <p class="hidden text-xs text-red-500 mt-2 ml-7" data-terms-error>
+                You must accept the terms to continue.
+              </p>
+            </div>
+
+            <%= f.submit "Create Account",
+                  data: { multi_step_form_target: "submitButton" },
+                  class: "w-full py-3 bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 text-white text-sm font-semibold rounded-xl transition cursor-pointer shadow-sm shadow-indigo-200" %>
+
+            <p class="text-center text-sm text-slate-500 mt-5">
+              Need to change your email?
+              <button type="button" data-action="multi-step-form#back" class="text-indigo-500 font-semibold hover:text-indigo-700 transition">
+                Go back to Step 2
+              </button>
+            </p>
+          </div>
+        </div>
+
+      <% end %>
+
+    </div>
+  </main>
+
+  <%# ── Footer ── %>
+  <footer class="border-t border-slate-200 bg-white">
+    <div class="max-w-5xl mx-auto px-6 py-5 flex items-center justify-between text-sm text-slate-500">
+      <div class="flex items-center gap-2">
+        <span class="font-semibold text-slate-700">FreelaHub</span>
+        <span>© <%= Date.current.year %> FreelaHub SaaS. All rights reserved.</span>
+      </div>
+      <div class="hidden sm:flex items-center gap-6">
+        <%= link_to "Terms", "#", class: "hover:text-slate-700 transition" %>
+        <%= link_to "Privacy", "#", class: "hover:text-slate-700 transition" %>
+        <%= link_to "Support", "#", class: "hover:text-slate-700 transition" %>
+        <%= link_to "Contact", "#", class: "hover:text-slate-700 transition" %>
+      </div>
+    </div>
+  </footer>
+
+</div>

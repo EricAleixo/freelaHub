@@ -1,0 +1,22 @@
+<nav class="bg-white border-b border-slate-200">
+  <div class="max-w-7xl mx-auto px-6">
+    <ul class="flex items-center gap-8 text-sm font-medium">
+      <% tabs = {
+           details:  ["Details",  "#"],
+           posts:    ["Posts",    "#"],
+           contacts: ["Jobs", "/jobs"],
+           improve:  ["Improve",  "#"]
+         } %>
+
+      <% tabs.each do |key, (label, url)| %>
+        <% is_active = (active == key) %>
+        <li class="py-4 -mb-px">
+          <%= link_to label, url,
+                class: "block border-b-2 transition #{
+                  is_active ? 'border-indigo-500 text-slate-900' : 'border-transparent text-slate-500 hover:text-slate-700'
+                }" %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+</nav>

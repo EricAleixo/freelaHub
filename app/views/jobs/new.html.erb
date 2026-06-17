@@ -1,0 +1,18 @@
+<% content_for :title, "Post a Job · FreelaHub" %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+
+  <%# ── Header da página ── %>
+  <div class="mb-6">
+    <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Post a Job</h1>
+    <p class="text-slate-500 text-sm mt-1.5">
+      Describe the role and set your budget to start receiving proposals.
+    </p>
+  </div>
+
+  <%# ── Card do formulário ── %>
+  <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8">
+    <%= render "form", job: @job %>
+  </div>
+
+</div>

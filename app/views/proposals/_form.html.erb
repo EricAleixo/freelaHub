@@ -1,0 +1,42 @@
+<%= form_with(model: proposal, class: "contents") do |form| %>
+  <% if proposal.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(proposal.errors.count, "error") %> prohibited this proposal from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% proposal.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="my-5">
+    <%= form.label :profile_id %>
+    <%= form.text_field :profile_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": proposal.errors[:profile_id].none?, "border-red-400 focus:outline-red-600": proposal.errors[:profile_id].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :job_id %>
+    <%= form.text_field :job_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": proposal.errors[:job_id].none?, "border-red-400 focus:outline-red-600": proposal.errors[:job_id].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :message %>
+    <%= form.text_area :message, rows: 4, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": proposal.errors[:message].none?, "border-red-400 focus:outline-red-600": proposal.errors[:message].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :value %>
+    <%= form.text_field :value, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": proposal.errors[:value].none?, "border-red-400 focus:outline-red-600": proposal.errors[:value].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :status %>
+    <%= form.text_field :status, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": proposal.errors[:status].none?, "border-red-400 focus:outline-red-600": proposal.errors[:status].any?}] %>
+  </div>
+
+  <div class="inline">
+    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+  </div>
+<% end %>

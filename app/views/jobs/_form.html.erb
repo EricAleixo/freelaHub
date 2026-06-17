@@ -1,0 +1,80 @@
+<%#
+  Form de Job, usado em new e edit.
+  Sempre escopado ao usuário logado — o controller já garante que
+  @job pertence a current_user (current_user.jobs.new / .find).
+%>
+<%= form_with(model: job, class: "space-y-8") do |form| %>
+
+  <% if job.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-600 px-4 py-3 text-sm font-medium rounded-xl">
+      <h2><%= pluralize(job.errors.count, "error") %> prohibited this job from being saved:</h2>
+      <ul class="list-disc ml-5 mt-1.5 space-y-0.5">
+        <% job.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%# ── Título ── %>
+  <div>
+    <%= form.label :title, "Job title", class: "block text-sm font-medium text-slate-700 mb-1.5" %>
+    <%= form.text_field :title,
+          placeholder: "e.g. Senior React Developer",
+          autofocus: true,
+          class: field_classes(job, :title) %>
+  </div>
+
+  <%# ── Descrição ── %>
+  <div>
+    <%= form.label :description, class: "block text-sm font-medium text-slate-700 mb-1.5" %>
+    <%= form.text_area :description, rows: 6,
+          placeholder: "Describe the responsibilities, requirements, and what success looks like in this role…",
+          class: field_classes(job, :description) %>
+    <p class="text-xs text-slate-400 mt-1.5">Be specific — clear job posts get better proposals.</p>
+  </div>
+
+  <%# ── Budget + Status, lado a lado ── %>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+    <div>
+      <%= form.label :budget, class: "block text-sm font-medium text-slate-700 mb-1.5" %>
+      <div class="relative">
+        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">$</span>
+        <%= form.number_field :budget,
+              step: 0.01,
+              min: 0,
+              placeholder: "0.00",
+              class: field_classes(job, :budget, with_icon: true) %>
+      </div>
+    </div>
+
+    <div>
+      <%= form.label :status, class: "block text-sm font-medium text-slate-700 mb-1.5" %>
+      <%= form.select :status,
+            Job.statuses.keys.map { |key| [key.titleize, key] },
+            {},
+            class: field_classes(job, :status) + " cursor-pointer" %>
+    </div>
+  </div>
+
+  <%# ── Preview do status selecionado ── %>
+  <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-start gap-3">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-slate-400 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"/>
+    </svg>
+    <p class="text-sm text-slate-500 leading-relaxed">
+      <span class="font-medium text-slate-700">Draft</span> jobs are only visible to you.
+      <span class="font-medium text-slate-700">Open</span> jobs accept proposals.
+      <span class="font-medium text-slate-700">Paused</span> jobs are hidden temporarily.
+      <span class="font-medium text-slate-700">Closed</span> jobs no longer accept proposals.
+    </p>
+  </div>
+
+  <%# ── Ações ── %>
+  <div class="flex items-center justify-end gap-3 pt-2 border-t border-slate-100">
+    <%= link_to "Cancel", jobs_path,
+          class: "px-5 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 transition" %>
+    <%= form.submit job.new_record? ? "Post job" : "Save changes",
+          class: "px-5 py-2.5 bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 text-white text-sm font-semibold rounded-xl transition cursor-pointer shadow-sm shadow-indigo-200" %>
+  </div>
+<% end %>
