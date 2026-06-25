@@ -50,6 +50,10 @@
           <span class="truncate"><%= current_user.email %></span>
         </p>
       </div>
+      <%= button_to "Sair",
+        destroy_user_session_path,
+        method: :delete,
+        class: "w-full bg-red-500 text-white px-4 py-2 rounded mt-5 font-semibold cursor-pointer" %>
     </div>
 
     <%# ══════════════════════════════════════════ %>
@@ -115,7 +119,7 @@
           </datalist>
         </div>
 
-        <%= f.submit "Add",
+        <%= f.submit "Adicionar",
               class: "px-5 py-2.5 bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 text-white text-sm font-semibold rounded-xl transition cursor-pointer shrink-0" %>
       <% end %>
     </div>

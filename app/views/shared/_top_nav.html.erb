@@ -2,14 +2,15 @@
   <div class="max-w-7xl mx-auto px-6">
     <ul class="flex items-center gap-8 text-sm font-medium">
       <% tabs = {
-           details:  ["Details",  "#"],
+           details:  ["Details",  "/"],
            posts:    ["Posts",    "#"],
-           contacts: ["Jobs", "/jobs"],
+           contacts: ["Trabalhos", "/jobs"],
            improve:  ["Improve",  "#"]
          } %>
 
       <% tabs.each do |key, (label, url)| %>
-        <% is_active = (active == key) %>
+        <% is_active = current_page?(url) %>
+
         <li class="py-4 -mb-px">
           <%= link_to label, url,
                 class: "block border-b-2 transition #{
