@@ -1,20 +1,16 @@
 class DashboardController < ApplicationController
-  before_action :authenticate_user! # remova esta linha se quiser a home pública
+  before_action :authenticate_user!
 
   def show
-    # NOTE: estes dados são fictícios para fins de layout.
-    # Quando tiver um model Profile (ou usar o próprio current_user),
-    # troque este OpenStruct por algo como: @profile = current_user.profile
     @profile = OpenStruct.new(
       name: current_user&.full_name || "Caroline Belfort",
-      headline: "Station Oaklnont",
+      headline: current_user&.profile.headline || "",
       initials: (current_user&.full_name || "Caroline Belfort").split.map(&:first).first(2).join.upcase,
       connections_count: 358,
       views_count: 25,
       links: [
-        { label: "linkedin.com/carolinebelfort", url: "#" },
-        { label: "carolinebelfort", url: "#" },
-        { label: "carolinebelfort", url: "#" }
+        { label: current_user&.profile.linkedin, url: current_user&.profile.linkedin },
+        { label: current_user&.profile.github, url: current_user&.profile.github },
       ],
       showreels: [
         { title: "Showreel 2015" },
@@ -45,5 +41,12 @@ class DashboardController < ApplicationController
       stats: { views: 25, visitors: 15 },
       similar_profile: { name: "Cynthia Aurele", role: "Project manager", initials: "CA" }
     )
+
+    @posts = Post.joins(:attachments_attachments).distinct.limit(2)
+    @jobs = Job.all
+    @similar_profiles = Profile.where.not(user_id: current_user.id)
+    @profile_views = ProfileView.where(viewed_id: current_user.profile.id).count
+
+    puts "Veja: ",@profile_views
   end
 end

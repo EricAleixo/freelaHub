@@ -1,14 +1,19 @@
 Rails.application.routes.draw do
+  resources :posts
 
   root "dashboard#show"
-
-  get "dashboard", to: "dashboard#show", as: :dashboard
   
   resources :proposals
   resources :jobs
   resources :profile_skills
   resources :skills
-  resource :profile, only: [:show, :edit, :update]
+  
+  
+  get "profile/edit",      to: "profiles#edit",   as: :edit_profile  # primeiro
+  get "profile/:username", to: "profiles#show",   as: :profile
+  patch "profile",         to: "profiles#update"
+  put   "profile",         to: "profiles#update"
+
   devise_for :users, controllers: {
     sessions: "users/sessions",
     registrations: "users/registrations"

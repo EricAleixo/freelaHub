@@ -1,8 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-
-// Controla a navegação entre os 3 passos do formulário de registro.
-// Cada "step" é validado antes de avançar; nada é submetido ao servidor
-// até o usuário clicar em "Create Account" no passo 3.
+3.
 export default class extends Controller {
   static targets = [
     "step",
@@ -10,6 +7,7 @@ export default class extends Controller {
     "progressLabel",
     "fullName",
     "email",
+    "username",
     "password",
     "passwordConfirmation",
     "roleInput",
@@ -87,6 +85,11 @@ export default class extends Controller {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailPattern.test(emailValue)) {
       this.markInvalid(this.emailTarget, "Please enter a valid email address.")
+      valid = false
+    }
+
+    if (!this.usernameTarget,value.trim()) {
+      this.markInvalid(this.usernameTarget, "Coloque um username")
       valid = false
     }
 

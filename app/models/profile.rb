@@ -3,6 +3,10 @@ class Profile < ApplicationRecord
  
   has_many :profile_skills, dependent: :destroy
   has_many :skills, through: :profile_skills
+
+  has_many :views_received, class_name: "ProfileView", foreign_key: :viewed_id
+  has_many :views_given,    class_name: "ProfileView", foreign_key: :viewer_id
+  has_many :visitors, through: :views_received, source: :viewer
  
   def initials
     name = user.try(:full_name).presence || user.email
