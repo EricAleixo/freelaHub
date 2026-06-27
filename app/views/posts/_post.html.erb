@@ -38,7 +38,7 @@
         class="hidden absolute right-0 mt-1 w-36 bg-white rounded-xl border border-gray-100 shadow-lg py-1 z-10"
       >
         <%= link_to "Editar", edit_post_path(post),
-          class: "flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition" %>
+          class: "flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-gray-50 transition" %>
         <%= button_to "Excluir", post, method: :delete,
           class: "w-full flex items-center gap-2 px-3 py-2 text-sm text-red-500 hover:bg-red-50 transition cursor-pointer bg-transparent border-0",
           data: { turbo_confirm: "Tem certeza?" } %>
@@ -47,9 +47,101 @@
   </div>
 
   <%# Título — antes da mídia %>
-  <h2 class="px-4 pt-3 pb-2 text-[15px] font-semibold text-gray-900 leading-snug">
+  <h2 class="text-lg px-4 pt-3 pb-2 text-[15px] font-semibold text-gray-900 leading-snug">
     <%= post.title %>
   </h2>
+
+  <%# ── Chip de vaga vinculada ── %>
+  <% if post.job.present? %>
+    <div class="border border-indigo-100">
+
+      <div class="flex items-start gap-3 p-4 transition-colors group">
+
+        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white border border-indigo-100 shadow-sm">
+          <svg xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6 text-indigo-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2">
+            <path stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+          </svg>
+        </div>
+
+        <div class="min-w-0 flex-1">
+          <div class="flex items-center gap-2 flex-wrap">
+
+            <h3 class="truncate text-lg font-semibold text-slate-900 transition-colors">
+              <%= post.job.title %>
+            </h3>
+
+            <% if post.job.status == "open" %>
+              <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-1 text-[11px] font-semibold text-emerald-700">
+                <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+                Aberta
+              </span>
+            <% end %>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="grid grid-cols-3 border-y border-indigo-100 bg-white">
+        <div class="grid place-items-center border-r border-indigo-100 py-3">
+          <span class="text-base font-semibold text-indigo-700">
+          R$ <%= post.job.budget %>
+          </span>
+          <span class="text-xs text-slate-500">
+            Orçamento
+          </span>
+        </div>
+
+        <div class="grid place-items-center border-r border-indigo-100 py-3">
+          <span class="text-base font-semibold text-indigo-700">
+            <%= post.job.human_status %>
+          </span>
+          <span class="text-xs text-slate-500">
+            Status
+          </span>
+        </div>
+
+        <div class="grid place-items-center py-3">
+          <span class="text-base font-semibold text-indigo-700">
+            3 dias
+          </span>
+          <span class="text-xs text-slate-500">
+            Propostas
+          </span>
+        </div>
+      </div>
+
+      <%= link_to job_path(post.job),
+          class: "flex w-full items-center justify-center gap-2 border-t border-indigo-100 bg-white py-3 text-sm font-medium text-indigo-700 transition-colors hover:bg-indigo-50" do %>
+
+        <svg xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2">
+          <path stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+          <path stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5s8.268 2.943 9.542 7c-1.274 4.057-5.065 7-9.542 7S3.732 16.057 2.458 12z"/>
+        </svg>
+
+        <span>Ver vaga</span>
+
+      <% end %>
+
+    </div>
+  <% end %>
 
   <%# Carrossel de mídia %>
   <% if post.attachments.attached? %>
@@ -83,7 +175,6 @@
       </div>
 
       <% if post.attachments.count > 1 %>
-
         <%# Seta anterior %>
         <button
           type="button"
@@ -119,7 +210,6 @@
           data-post-carousel-target="dots"
           class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10"
         ></div>
-
       <% end %>
     </section>
   <% end %>
@@ -127,7 +217,7 @@
   <%# Descrição %>
   <% if post.description.present? %>
     <div class="px-4 pt-3">
-      <p class="text-[14px] leading-relaxed text-gray-600 whitespace-pre-line">
+      <p class="text-[18px] leading-relaxed text-gray-600 whitespace-pre-line">
         <%= post.description %>
       </p>
     </div>
@@ -137,7 +227,7 @@
   <div class="flex items-center gap-1 px-2 py-3 mt-2 border-t border-gray-100">
 
     <button
-      class="flex items-center gap-1.5 text-lg font-medium text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 px-3 py-1.5 rounded-lg transition border-0 bg-transparent cursor-pointer"
+      class="flex items-center gap-1.5 text-md font-medium text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 px-3 py-1.5 rounded-lg transition border-0 bg-transparent cursor-pointer"
       data-controller="like"
       data-action="click->like#toggle"
       aria-label="Curtir"
@@ -149,7 +239,7 @@
     </button>
 
     <button
-      class="flex items-center gap-1.5 text-lg font-medium text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 px-3 py-1.5 rounded-lg transition border-0 bg-transparent cursor-pointer"
+      class="flex items-center gap-1.5 text-md font-medium text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 px-3 py-1.5 rounded-lg transition border-0 bg-transparent cursor-pointer"
       aria-label="Comentar"
     >
       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -159,7 +249,7 @@
     </button>
 
     <button
-      class="flex items-center gap-1.5 text-lg font-medium text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 px-3 py-1.5 rounded-lg transition border-0 bg-transparent cursor-pointer ml-auto"
+      class="flex items-center gap-1.5 text-md font-medium text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 px-3 py-1.5 rounded-lg transition border-0 bg-transparent cursor-pointer ml-auto"
       aria-label="Compartilhar"
     >
       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

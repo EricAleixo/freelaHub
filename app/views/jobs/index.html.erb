@@ -1,143 +1,314 @@
 <% content_for :title, "Jobs · FreelaHub" %>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-  <%# ── Notice ── %>
   <% if notice.present? %>
-    <p class="mb-5 inline-flex items-center gap-2 py-2 px-3.5 bg-emerald-50 text-emerald-600 text-sm font-medium rounded-lg" id="notice">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    <div id="notice"
+         class="mb-6 flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
+      <svg xmlns="http://www.w3.org/2000/svg"
+           class="h-5 w-5"
+           fill="none"
+           viewBox="0 0 24 24"
+           stroke="currentColor"
+           stroke-width="2">
+        <path stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
       </svg>
+
       <%= notice %>
-    </p>
+    </div>
   <% end %>
 
-  <%# ── Header ── %>
-  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+  <div class="flex flex-col gap-5 md:flex-row md:items-center md:justify-between mb-8">
+
     <div>
-      <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Manage Jobs</h1>
-      <p class="text-slate-500 text-sm mt-1.5">Review your active postings and track proposal activity.</p>
+      <h1 class="text-3xl font-bold text-slate-900">
+        Minhas vagas
+      </h1>
+
+      <p class="mt-2 text-slate-500">
+        Gerencie suas vagas e acompanhe as propostas recebidas.
+      </p>
     </div>
 
     <%= link_to new_job_path,
-          class: "inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 text-white text-sm font-semibold rounded-xl transition shadow-sm shadow-indigo-200 shrink-0" do %>
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+        class: "inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 font-semibold text-white transition hover:bg-indigo-700" do %>
+
+      <svg xmlns="http://www.w3.org/2000/svg"
+           class="h-5 w-5"
+           fill="none"
+           viewBox="0 0 24 24"
+           stroke="currentColor"
+           stroke-width="2.5">
+        <path stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 4.5v15m7.5-7.5h-15"/>
       </svg>
-      Post a job
+
+      Publicar vaga
+
     <% end %>
+
   </div>
 
-  <%# ── Stat cards ── %>
-  <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
-    <div class="bg-white rounded-2xl border border-slate-200 p-6">
-      <p class="text-sm text-slate-500 mb-2">Active job listings</p>
-      <p class="text-3xl font-bold text-indigo-600"><%= @jobs.select(&:open?).count %></p>
+  <div class="grid gap-5 sm:grid-cols-3 mb-8">
+
+    <div class="rounded-2xl border border-slate-200 bg-white p-6">
+
+      <p class="text-sm text-slate-500">
+        Vagas abertas
+      </p>
+
+      <h2 class="mt-3 text-4xl font-bold text-indigo-600">
+        <%= @jobs.count(&:open?) %>
+      </h2>
+
     </div>
 
-    <div class="bg-white rounded-2xl border border-slate-200 p-6">
-      <p class="text-sm text-slate-500 mb-2">Total proposals</p>
-      <p class="text-3xl font-bold text-slate-900"><%= @jobs.sum { |job| job.proposals.size } %></p>
+    <div class="rounded-2xl border border-slate-200 bg-white p-6">
+
+      <p class="text-sm text-slate-500">
+        Total de propostas
+      </p>
+
+      <h2 class="mt-3 text-4xl font-bold text-slate-900">
+        <%= @jobs.sum { |job| job.proposals.count } %>
+      </h2>
+
     </div>
 
-    <div class="bg-white rounded-2xl border border-slate-200 p-6">
-      <p class="text-sm text-slate-500 mb-2">Total jobs posted</p>
-      <p class="text-3xl font-bold text-slate-900"><%= @jobs.size %></p>
+    <div class="rounded-2xl border border-slate-200 bg-white p-6">
+
+      <p class="text-sm text-slate-500">
+        Total de vagas
+      </p>
+
+      <h2 class="mt-3 text-4xl font-bold text-slate-900">
+        <%= @jobs.count %>
+      </h2>
+
     </div>
+
   </div>
 
-  <%# ── Tabela ── %>
-  <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+  <% if @jobs.any? %>
 
-    <% if @jobs.any? %>
-      <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-          <thead>
-            <tr class="border-b border-slate-200 text-left text-slate-500">
-              <th class="px-6 py-4 font-medium">Title</th>
-              <th class="px-6 py-4 font-medium">Status</th>
-              <th class="px-6 py-4 font-medium">Budget</th>
-              <th class="px-6 py-4 font-medium">Proposals</th>
-              <th class="px-6 py-4 font-medium">Created at</th>
-              <th class="px-6 py-4 font-medium text-right">Actions</th>
-            </tr>
-          </thead>
+    <div class="space-y-5">
 
-          <tbody class="divide-y divide-slate-100">
-            <% @jobs.each do |job| %>
-              <tr class="hover:bg-slate-50/60 transition">
+      <% @jobs.each do |job| %>
 
-                <td class="px-6 py-4">
-                  <p class="font-semibold text-slate-900"><%= job.title %></p>
-                </td>
+        <div class="rounded-2xl border border-slate-200 bg-white transition hover:border-indigo-200 hover:shadow-md">
 
-                <td class="px-6 py-4">
-                  <% status_styles = {
-                       "draft"  => "bg-slate-100 text-slate-600",
-                       "open"   => "bg-emerald-50 text-emerald-600",
-                       "paused" => "bg-amber-50 text-amber-600",
-                       "closed" => "bg-slate-100 text-slate-500"
-                     } %>
-                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium <%= status_styles[job.status] %>">
-                    <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
-                    <%= job.status.titleize %>
-                  </span>
-                </td>
+          <div class="p-6">
 
-                <td class="px-6 py-4 text-slate-700">
-                  <%= job.budget.present? ? number_to_currency(job.budget) : "—" %>
-                </td>
+            <div class="flex items-start justify-between gap-5">
 
-                <td class="px-6 py-4">
-                  <span class="font-medium text-indigo-600"><%= job.proposals.size %></span>
-                </td>
+              <div class="flex gap-4">
 
-                <td class="px-6 py-4 text-slate-500">
-                  <%= job.created_at.strftime("%b %d, %Y") %>
-                </td>
+                <div class="flex h-14 w-14 items-center justify-center rounded-xl border border-indigo-100 bg-indigo-50">
 
-                <td class="px-6 py-4">
-                  <div class="flex items-center justify-end gap-3 text-slate-400">
-                    <%= link_to job, title: "View", class: "hover:text-slate-700 transition" do %>
-                      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/>
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                      </svg>
-                    <% end %>
+                  <svg xmlns="http://www.w3.org/2000/svg"
+                       class="h-7 w-7 text-indigo-500"
+                       fill="none"
+                       viewBox="0 0 24 24"
+                       stroke="currentColor"
+                       stroke-width="2">
+                    <path stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                  </svg>
 
-                    <%= link_to edit_job_path(job), title: "Edit", class: "hover:text-slate-700 transition" do %>
-                      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/>
-                      </svg>
-                    <% end %>
+                </div>
 
-                    <%= button_to job, method: :delete,
-                          form: { data: { turbo_confirm: "Remove \"#{job.title}\"? This can't be undone." } },
-                          title: "Delete",
-                          class: "hover:text-red-500 transition" do %>
-                      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/>
-                      </svg>
-                    <% end %>
+                <div>
+
+                  <%= link_to job,
+                      class: "text-xl font-semibold text-slate-900 hover:text-indigo-600 transition" do %>
+
+                    <%= job.title %>
+
+                  <% end %>
+
+                  <p class="mt-1 text-sm text-slate-500">
+                    Publicada
+                    <%= time_ago_in_words(job.created_at) %>
+                    atrás
+                  </p>
+
+                  <div class="mt-3">
+                    <span class="<%= job.status_badge_class %>">
+                      <%= job.human_status %>
+                    </span>
                   </div>
-                </td>
-              </tr>
+
+                </div>
+
+              </div>
+                            <div class="flex items-center gap-2">
+
+                <%= link_to job,
+                    class: "flex h-10 w-10 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-800",
+                    title: "Visualizar" do %>
+
+                  <svg xmlns="http://www.w3.org/2000/svg"
+                       class="h-5 w-5"
+                       fill="none"
+                       viewBox="0 0 24 24"
+                       stroke="currentColor"
+                       stroke-width="2">
+                    <path stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M2.458 12C3.732 7.943 7.523 5 12 5s8.268 2.943 9.542 7c-1.274 4.057-5.065 7-9.542 7S3.732 16.057 2.458 12z"/>
+                    <path stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  </svg>
+
+                <% end %>
+
+                <%= link_to edit_job_path(job),
+                    class: "flex h-10 w-10 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-800",
+                    title: "Editar" do %>
+
+                  <svg xmlns="http://www.w3.org/2000/svg"
+                       class="h-5 w-5"
+                       fill="none"
+                       viewBox="0 0 24 24"
+                       stroke="currentColor"
+                       stroke-width="2">
+                    <path stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/>
+                  </svg>
+
+                <% end %>
+
+                <%= button_to job,
+                    method: :delete,
+                    form: {
+                      data: {
+                        turbo_confirm: "Excluir \"#{job.title}\"?"
+                      }
+                    },
+                    class: "flex h-10 w-10 items-center justify-center rounded-lg text-slate-500 transition hover:bg-red-50 hover:text-red-600",
+                    title: "Excluir" do %>
+
+                  <svg xmlns="http://www.w3.org/2000/svg"
+                       class="h-5 w-5"
+                       fill="none"
+                       viewBox="0 0 24 24"
+                       stroke="currentColor"
+                       stroke-width="2">
+                    <path stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/>
+                  </svg>
+
+                <% end %>
+
+              </div>
+
+            </div>
+
+            <% if job.description.present? %>
+
+              <p class="mt-5 line-clamp-2 leading-7 text-slate-600">
+                <%= job.description %>
+              </p>
+
             <% end %>
-          </tbody>
-        </table>
-      </div>
-    <% else %>
-      <div class="text-center py-16 px-6">
-        <div class="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center mx-auto mb-4">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0"/>
-          </svg>
+
+          </div>
+
+          <div class="grid grid-cols-3 border-t border-slate-200 bg-slate-50">
+
+            <div class="py-4 text-center border-r border-slate-200">
+              <p class="font-semibold text-indigo-600">
+                <%= job.budget.present? ? number_to_currency(job.budget) : "—" %>
+              </p>
+              <p class="mt-1 text-xs text-slate-500">
+                Orçamento
+              </p>
+            </div>
+
+            <div class="py-4 text-center border-r border-slate-200">
+              <p class="font-semibold text-indigo-600">
+                <%= job.proposals.count %>
+              </p>
+              <p class="mt-1 text-xs text-slate-500">
+                Propostas
+              </p>
+            </div>
+
+            <div class="py-4 text-center">
+              <p class="font-semibold text-indigo-600">
+                <%= l(job.created_at.to_date) %>
+              </p>
+              <p class="mt-1 text-xs text-slate-500">
+                Publicada
+              </p>
+            </div>
+
+          </div>
+
         </div>
-        <p class="text-slate-500 text-sm mb-5">You haven't posted any jobs yet.</p>
-        <%= link_to "Post your first job", new_job_path,
-              class: "inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-semibold rounded-xl transition" %>
+
+      <% end %>
+
+    </div>
+
+  <% else %>
+
+    <div class="rounded-2xl border border-dashed border-slate-300 bg-white py-20">
+
+      <div class="mx-auto max-w-sm text-center">
+
+        <div class="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100">
+
+          <svg xmlns="http://www.w3.org/2000/svg"
+               class="h-8 w-8 text-slate-400"
+               fill="none"
+               viewBox="0 0 24 24"
+               stroke="currentColor"
+               stroke-width="1.8">
+            <path stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0A2.25 2.25 0 0021 12.49V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006A23.978 23.978 0 0112 15.75a23.978 23.978 0 01-8.25-1.6"/>
+          </svg>
+
+        </div>
+
+        <h2 class="text-xl font-semibold text-slate-900">
+          Nenhuma vaga publicada
+        </h2>
+
+        <p class="mt-2 text-slate-500">
+          Crie sua primeira vaga e comece a receber propostas de profissionais.
+        </p>
+
+        <%= link_to new_job_path,
+            class: "mt-8 inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 font-semibold text-white transition hover:bg-indigo-700" do %>
+
+          <svg xmlns="http://www.w3.org/2000/svg"
+               class="h-5 w-5"
+               fill="none"
+               viewBox="0 0 24 24"
+               stroke="currentColor"
+               stroke-width="2">
+            <path stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M12 4.5v15m7.5-7.5h-15"/>
+          </svg>
+
+          Publicar vaga
+
+        <% end %>
+
       </div>
-    <% end %>
-  </div>
+
+    </div>
+
+  <% end %>
 
 </div>
