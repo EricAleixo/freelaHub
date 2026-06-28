@@ -1,57 +1,71 @@
 class JobsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_job, only: %i[show edit update destroy]
+  before_action :set_job, except: %i[index new create my_jobs]
+  after_action :verify_authorized, except: %i[index my_jobs]
 
-  # GET /jobs
   def index
-    @jobs = current_user.jobs.order(created_at: :desc)
+    profile_id = current_user.profile.id
+
+    case_sql = Job.send(
+      :sanitize_sql_array,
+      ["MAX(CASE WHEN proposals.profile_id = ? THEN 1 ELSE 0 END)", profile_id]
+    )
+
+    @jobs = Job
+      .where.not(user_id: current_user.id)
+      .left_joins(:proposals)
+      .select("jobs.*, #{case_sql} AS has_proposal")
+      .group("jobs.id")
+      .order("has_proposal ASC, jobs.created_at DESC")
   end
 
-  # GET /jobs/1
   def show
+    authorize @job
   end
 
-  # GET /jobs/new
   def new
     @job = current_user.jobs.new(status: :draft)
+    authorize @job
   end
 
-  # GET /jobs/1/edit
-  def edit
-  end
-
-  # POST /jobs
   def create
     @job = current_user.jobs.new(job_params)
-
+    authorize @job
     if @job.save
-      redirect_to @job, notice: "Job was successfully posted."
+      redirect_to @job, notice: "Vaga publicada com sucesso."
     else
       render :new, status: :unprocessable_entity
     end
   end
 
-  # PATCH/PUT /jobs/1
+  def edit
+    authorize @job
+  end
+
   def update
+    authorize @job
     if @job.update(job_params)
-      redirect_to @job, notice: "Job was successfully updated."
+      redirect_to @job, notice: "Vaga atualizada com sucesso."
     else
       render :edit, status: :unprocessable_entity
     end
   end
 
-  # DELETE /jobs/1
   def destroy
+    authorize @job
     @job.destroy!
-    redirect_to jobs_path, notice: "Job was successfully removed.", status: :see_other
+    redirect_to jobs_path, notice: "Vaga removida.", status: :see_other
+  end
+
+  def my_jobs
+    @my_jobs = current_user.jobs.order(created_at: :desc)
+    @my_proposals = Proposal.where(profile_id: current_user.profile.id) || []
   end
 
   private
 
-  # Sempre escopado ao usuário logado — impede acessar/editar job de outra pessoa
-  # trocando o :id na URL.
   def set_job
-    @job = current_user.jobs.find(params[:id])
+    @job = Job.find(params[:id])
   end
 
   def job_params

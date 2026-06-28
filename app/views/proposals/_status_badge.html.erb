@@ -1,0 +1,17 @@
+<% color = case proposal.status
+           when "pending"  then "bg-amber-50 text-amber-700 border-amber-200"
+           when "accepted" then "bg-emerald-50 text-emerald-700 border-emerald-200"
+           when "rejected" then "bg-red-50 text-red-600 border-red-200"
+           else                 "bg-slate-100 text-slate-500 border-slate-200"
+           end %>
+
+<% label = case proposal.status
+           when "pending"  then "Aguardando"
+           when "accepted" then "Aceita"
+           when "rejected" then "Recusada"
+           else "Não definido"
+           end %>
+
+<span class="inline-flex items-center text-xs font-medium px-2 py-0.5 rounded-full border <%= color %>">
+  <%= label %>
+</span>

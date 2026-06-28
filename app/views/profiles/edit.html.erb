@@ -60,9 +60,9 @@
     <%# Coluna direita — formulário                 %>
     <%# ══════════════════════════════════════════ %>
     <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8">
-      <h1 class="text-xl font-semibold text-slate-900">Edit profile</h1>
+      <h1 class="text-xl font-semibold text-slate-900">Editar pefil</h1>
       <p class="text-sm text-slate-500 mt-1 mb-7">
-        This information will be visible to people viewing your public profile.
+        Essas informações será visível para todo mundo.
       </p>
 
       <%= render "form", profile: @profile %>
@@ -77,9 +77,9 @@
     <div class="hidden lg:block"></div> <%# alinha com a coluna do form acima %>
 
     <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8">
-      <h2 class="text-xl font-semibold text-slate-900">Skills</h2>
+      <h2 class="text-xl font-semibold text-slate-900">Habilidades</h2>
       <p class="text-sm text-slate-500 mt-1 mb-6">
-        Add the skills that best represent your experience.
+        Adicione suas experiências para melhorar sua apresentação pública
       </p>
 
       <%# Tags das skills já atribuídas %>
@@ -99,7 +99,7 @@
           <% end %>
         </div>
       <% else %>
-        <p class="text-sm text-slate-400 mb-6">No skills added yet.</p>
+        <p class="text-sm text-slate-400 mb-6">Nenhuma habilidade adicionada.</p>
       <% end %>
 
       <%# Form de adicionar nova skill, com sugestões via datalist %>

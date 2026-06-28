@@ -43,10 +43,9 @@ class DashboardController < ApplicationController
     )
 
     @posts = Post.joins(:attachments_attachments).distinct.limit(2)
-    @jobs = Job.all
+    @jobs = Job.where.not(user_id: current_user.id).where.not(id: Proposal.where(profile_id: current_user.profile.id).select(:job_id))
     @similar_profiles = Profile.where.not(user_id: current_user.id)
     @profile_views = ProfileView.where(viewed_id: current_user.profile.id).count
-
-    puts "Veja: ",@profile_views
+    @profile_skills = current_user.profile.skills
   end
 end

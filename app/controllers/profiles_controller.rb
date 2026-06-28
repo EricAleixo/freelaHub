@@ -19,8 +19,8 @@ class ProfilesController < ApplicationController
                           .includes(viewer: :user)
                           .order(viewed_at: :desc)
                           .limit(10)
-    end
-end
+     end
+  end
 
   # GET /profile/edit
   def edit
@@ -29,7 +29,7 @@ end
   # PATCH/PUT /profile
   def update
     if @profile.update(profile_params)
-      redirect_to profile_path, notice: "Profile updated successfully."
+      redirect_to profile_path(current_user.username), notice: "Profile updated successfully."
     else
       render :edit, status: :unprocessable_entity
     end

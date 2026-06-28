@@ -1,9 +1,44 @@
-<% content_for :title, "New proposal" %>
+<div class="max-w-2xl mx-auto px-4 py-10">
+  <div class="mb-8">
+    <h1 class="text-2xl font-semibold text-slate-900">Enviar proposta</h1>
+    <p class="mt-1 text-sm text-slate-500">
+      Para: <span class="font-medium text-slate-700"><%= @job.title %></span>
+      &mdash; Orçamento: <span class="font-medium text-indigo-600"><%= number_to_currency(@job.budget) %></span>
+    </p>
+  </div>
 
-<div class="md:w-2/3 w-full">
-  <h1 class="font-bold text-4xl">New proposal</h1>
+  <%= form_with model: [@job, @proposal], class: "space-y-6" do |f| %>
+    <% if @proposal.errors.any? %>
+      <div class="rounded-xl bg-red-50 border border-red-200 p-4 text-sm text-red-700">
+        <ul class="list-disc list-inside space-y-1">
+          <% @proposal.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
 
-  <%= render "form", proposal: @proposal %>
+    <div>
+      <%= f.label :value, "Valor da proposta (R$)", class: "block text-sm font-medium text-slate-700 mb-1.5" %>
+      <%= f.number_field :value,
+            step: "0.01", min: "0",
+            placeholder: "Ex: 1500.00",
+            class: "w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm text-slate-900 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition" %>
+    </div>
 
-  <%= link_to "Back to proposals", proposals_path, class: "w-full sm:w-auto text-center mt-2 sm:mt-0 sm:ml-2 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+    <div>
+      <%= f.label :message, "Mensagem para o contratante", class: "block text-sm font-medium text-slate-700 mb-1.5" %>
+      <%= f.text_area :message,
+            rows: 6,
+            placeholder: "Descreva sua experiência com o projeto, prazo estimado e qualquer pergunta...",
+            class: "w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm text-slate-900 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition resize-none" %>
+    </div>
+
+    <div class="flex gap-3 pt-2">
+      <%= link_to "Cancelar", @job,
+            class: "flex-1 text-center rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 hover:border-slate-300 transition" %>
+      <%= f.submit "Enviar proposta",
+            class: "flex-1 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 transition cursor-pointer" %>
+    </div>
+  <% end %>
 </div>

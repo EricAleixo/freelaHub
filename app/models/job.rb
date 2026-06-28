@@ -20,6 +20,11 @@ class Job < ApplicationRecord
     end
   end
 
+  def already_proposed_by?(user)
+    return false unless user.profile
+    proposals.exists?(profile: user.profile)
+  end
+
   def human_status
     {
       "draft" => "Rabisco",
