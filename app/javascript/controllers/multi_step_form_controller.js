@@ -88,7 +88,7 @@ export default class extends Controller {
       valid = false
     }
 
-    if (!this.usernameTarget,value.trim()) {
+    if (!this.usernameTarget.value.trim()) {
       this.markInvalid(this.usernameTarget, "Coloque um username")
       valid = false
     }
