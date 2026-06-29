@@ -53,7 +53,7 @@ export default class extends Controller {
 
   updateProgress(stepNumber) {
     if (this.hasProgressLabelTarget) {
-      this.progressLabelTarget.textContent = `Step ${stepNumber} of 3`
+      this.progressLabelTarget.textContent = `Etapa ${stepNumber} de 3`
     }
 
     this.progressBarTargets.forEach((bar) => {
@@ -145,10 +145,10 @@ export default class extends Controller {
 
     const levels = [
       { label: "", color: "bg-slate-200" },
-      { label: "Weak", color: "bg-red-400" },
-      { label: "Fair", color: "bg-amber-400" },
-      { label: "Good", color: "bg-indigo-400" },
-      { label: "Strong", color: "bg-emerald-500" }
+      { label: "Fraca", color: "bg-red-400" },
+      { label: "Mediana", color: "bg-amber-400" },
+      { label: "Boa", color: "bg-indigo-400" },
+      { label: "Forte", color: "bg-emerald-500" }
     ]
 
     const level = levels[score]

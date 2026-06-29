@@ -98,7 +98,7 @@
         <%# ============================================== %>
         <div class="hidden" data-multi-step-form-target="step" data-step="2">
 
-          <h2 class="text-xl font-semibold text-slate-900 text-center mb-6">How will you use FreelaHub?</h2>
+          <h2 class="text-xl font-semibold text-slate-900 text-center mb-6">Como você irá usar o freelaHub?</h2>
 
           <%# Campo oculto que guarda o role selecionado %>
           <%= f.hidden_field :role, data: { multi_step_form_target: "roleInput" } %>
@@ -110,10 +110,10 @@
                  data-role="student"
                  data-action="click->multi-step-form#selectRole">
               <div class="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center mb-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5z"/>
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l6.16-3.42A12.083 12.083 0 0118 18.16V21M12 14L5.84 10.58A12.083 12.083 0 006 18.16V21"/>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-indigo-500">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
                 </svg>
+
               </div>
               <h3 class="font-semibold text-slate-900 mb-1">Estudante</h3>
               <p class="text-sm text-slate-500 leading-relaxed">
@@ -131,7 +131,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" d="M3 12v6a2 2 0 002 2h14a2 2 0 002-2v-6"/>
                 </svg>
               </div>
-              <h3 class="font-semibold text-slate-900 mb-1">Contractor</h3>
+              <h3 class="font-semibold text-slate-900 mb-1">Contratante</h3>
               <p class="text-sm text-slate-500 leading-relaxed">
                 Quero publicar projetos e contratar talentos.
               </p>
@@ -140,14 +140,14 @@
 
           <p class="hidden text-xs text-red-500 mb-4" data-step-two-error></p>
 
-          <div class="border-t border-slate-200 pt-5 mt-2 flex items-center justify-between">
+          <div class="border-t border-slate-200 gap-2 pt-5 mt-2 flex items-center justify-between">
             <button type="button"
                     data-action="multi-step-form#back"
                     class="flex items-center gap-1.5 text-sm font-medium text-slate-600 hover:text-slate-900 transition">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/>
               </svg>
-              Back
+              Voltar
             </button>
 
             <div class="flex items-center gap-4">
@@ -168,15 +168,15 @@
           <div class="bg-white rounded-2xl border border-slate-200 p-8">
 
             <div class="flex items-center justify-between mb-6">
-              <span class="text-xs font-bold text-indigo-500 tracking-wide">SECURITY SETUP</span>
+              <span class="text-xs font-bold text-indigo-500 tracking-wide">NÍVEL DE SEGURANÇA</span>
             </div>
 
             <%# Senha %>
             <div class="mb-1.5">
-              <label class="block text-sm font-medium text-slate-700 mb-1.5">Password</label>
+              <label class="block text-sm font-medium text-slate-700 mb-1.5">Senha</label>
               <div class="relative">
                 <%= f.password_field :password,
-                      placeholder: "Min. 12 characters",
+                      placeholder: "Min. 8 caracteres",
                       autocomplete: "new-password",
                       data: {
                         multi_step_form_target: "password",
@@ -204,16 +204,16 @@
               <% end %>
             </div>
             <p class="text-xs text-slate-500 mb-6">
-              Password strength:
+              Força da senha:
               <span class="font-semibold text-slate-400" data-multi-step-form-target="passwordStrengthLabel">—</span>
             </p>
 
             <%# Confirmação de senha %>
             <div class="mb-6">
-              <label class="block text-sm font-medium text-slate-700 mb-1.5">Confirm Password</label>
+              <label class="block text-sm font-medium text-slate-700 mb-1.5">Confirme a senha</label>
               <div class="relative">
                 <%= f.password_field :password_confirmation,
-                      placeholder: "Repeat password",
+                      placeholder: "Repita a senha",
                       autocomplete: "new-password",
                       data: { multi_step_form_target: "passwordConfirmation" },
                       class: "w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 focus:bg-white transition pr-11" %>
@@ -237,28 +237,40 @@
                        data-multi-step-form-target="terms"
                        class="mt-0.5 w-4 h-4 rounded border-slate-300 text-indigo-500 focus:ring-indigo-400 cursor-pointer shrink-0">
                 <span class="text-sm text-slate-600 leading-relaxed">
-                  I agree to FreelaHub's
-                  <%= link_to "Terms of Service", "#", class: "text-indigo-500 font-medium hover:text-indigo-700" %>
-                  and
-                  <%= link_to "Privacy Policy", "#", class: "text-indigo-500 font-medium hover:text-indigo-700" %>,
-                  including how we use data.
+                  Eu concordo com os
+                  <%= link_to "Termos e serviços", "#", class: "text-indigo-500 font-medium hover:text-indigo-700" %>
+                  e
+                  <%= link_to "Política privada", "#", class: "text-indigo-500 font-medium hover:text-indigo-700" %>,
+                  incluindo como usam os dados.
                 </span>
               </label>
               <p class="hidden text-xs text-red-500 mt-2 ml-7" data-terms-error>
-                You must accept the terms to continue.
+                Aceite os termos para continuar
               </p>
             </div>
 
-            <%= f.submit "Create Account",
+            <%= f.submit "Criar Conta",
                   data: { multi_step_form_target: "submitButton" },
                   class: "w-full py-3 bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 text-white text-sm font-semibold rounded-xl transition cursor-pointer shadow-sm shadow-indigo-200" %>
 
-            <p class="text-center text-sm text-slate-500 mt-5">
-              Need to change your email?
-              <button type="button" data-action="multi-step-form#back" class="text-indigo-500 font-semibold hover:text-indigo-700 transition">
-                Go back to Step 2
+            <div class="mt-5">
+              <button
+                type="button"
+                data-action="multi-step-form#back"
+                class="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-slate-700 transition"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                </svg>
+
+                Voltar
               </button>
-            </p>
+            </div>
           </div>
         </div>
 
