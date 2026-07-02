@@ -6,7 +6,7 @@
     <div class="relative w-10 h-10 shrink-0">
       <div class="absolute inset-0 rounded-full bg-linear-to-br from-indigo-400 to-indigo-800"></div>
       <div class="absolute inset-0.5 rounded-full bg-indigo-50 flex items-center justify-center text-xs font-bold text-indigo-700 z-10">
-        <%= post.user&.full_name&.split&.map { |n| n[0] }&.join&.upcase rescue "EA" %>
+        <%= post.user&.initials rescue "EA" %>
       </div>
     </div>
 

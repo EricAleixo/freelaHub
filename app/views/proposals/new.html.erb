@@ -1,44 +1,106 @@
 <div class="max-w-2xl mx-auto px-4 py-10">
-  <div class="mb-8">
+
+  <%# ── Breadcrumb / voltar ── %>
+  <%= link_to job_path(@job), class: "inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 transition mb-6" do %>
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+    </svg>
+    Voltar para a vaga
+  <% end %>
+
+  <%# ── Cabeçalho ── %>
+  <div class="mb-6">
     <h1 class="text-2xl font-semibold text-slate-900">Enviar proposta</h1>
     <p class="mt-1 text-sm text-slate-500">
-      Para: <span class="font-medium text-slate-700"><%= @job.title %></span>
-      &mdash; Orçamento: <span class="font-medium text-indigo-600"><%= number_to_currency(@job.budget) %></span>
+      Preencha os detalhes abaixo para se candidatar a esta vaga.
     </p>
   </div>
 
+  <%# ── Card resumo da vaga ── %>
+  <div class="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50/60 p-4 mb-8">
+    <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white border border-indigo-100 shadow-sm">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+      </svg>
+    </div>
+    <div class="min-w-0 flex-1">
+      <p class="text-sm font-semibold text-slate-900 truncate"><%= @job.title %></p>
+      <div class="flex items-center gap-3 mt-1">
+        <span class="text-xs text-slate-500">
+          Orçamento: <span class="font-medium text-indigo-600"><%= number_to_currency(@job.budget) %></span>
+        </span>
+        <% if @job.respond_to?(:proposals) %>
+          <span class="text-xs text-slate-400">&middot; <%= pluralize(@job.proposals.count, "proposta") %> recebida<%= "s" if @job.proposals.count != 1 %></span>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
   <%= form_with model: [@job, @proposal], class: "space-y-6" do |f| %>
+
+    <%# ── Erros ── %>
     <% if @proposal.errors.any? %>
-      <div class="rounded-xl bg-red-50 border border-red-200 p-4 text-sm text-red-700">
-        <ul class="list-disc list-inside space-y-1">
-          <% @proposal.errors.full_messages.each do |msg| %>
-            <li><%= msg %></li>
-          <% end %>
-        </ul>
+      <div class="flex gap-3 rounded-xl bg-red-50 border border-red-200 p-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+        </svg>
+        <div class="text-sm text-red-700">
+          <p class="font-medium mb-1">
+            <%= pluralize(@proposal.errors.count, "problema encontrado") %> no formulário
+          </p>
+          <ul class="list-disc list-inside space-y-0.5 text-red-600">
+            <% @proposal.errors.full_messages.each do |msg| %>
+              <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
       </div>
     <% end %>
 
+    <%# ── Valor ── %>
     <div>
-      <%= f.label :value, "Valor da proposta (R$)", class: "block text-sm font-medium text-slate-700 mb-1.5" %>
-      <%= f.number_field :value,
-            step: "0.01", min: "0",
-            placeholder: "Ex: 1500.00",
-            class: "w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm text-slate-900 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition" %>
+      <%= f.label :value, "Valor da proposta", class: "block text-sm font-medium text-slate-700 mb-1.5" %>
+      <div class="relative">
+        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-slate-400 pointer-events-none">R$</span>
+        <%= f.number_field :value,
+              step: "0.01", min: "0",
+              placeholder: "0,00",
+              class: "w-full rounded-xl border border-slate-200 pl-10 pr-4 py-2.5 text-sm text-slate-900 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition" %>
+      </div>
+      <p class="mt-1.5 text-xs text-slate-400">
+        O contratante definiu um orçamento de <%= number_to_currency(@job.budget) %> para este projeto.
+      </p>
     </div>
 
+    <%# ── Mensagem ── %>
     <div>
-      <%= f.label :message, "Mensagem para o contratante", class: "block text-sm font-medium text-slate-700 mb-1.5" %>
+      <div class="flex items-center justify-between mb-1.5">
+        <%= f.label :message, "Mensagem para o contratante", class: "block text-sm font-medium text-slate-700" %>
+        <span class="text-xs text-slate-400" data-controller="char-counter" data-char-counter-max-value="1000">
+          <span data-char-counter-target="count">0</span>/1000
+        </span>
+      </div>
       <%= f.text_area :message,
             rows: 6,
-            placeholder: "Descreva sua experiência com o projeto, prazo estimado e qualquer pergunta...",
+            maxlength: 1000,
+            placeholder: "Descreva sua experiência com o tipo de projeto, prazo estimado e qualquer pergunta que tenha sobre a vaga...",
+            data: { char_counter_target: "input", action: "input->char-counter#update" },
             class: "w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm text-slate-900 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition resize-none" %>
+      <p class="mt-1.5 text-xs text-slate-400">
+        Propostas com mensagens detalhadas têm mais chance de serem aceitas.
+      </p>
     </div>
 
+    <%# ── Ações ── %>
     <div class="flex gap-3 pt-2">
       <%= link_to "Cancelar", @job,
-            class: "flex-1 text-center rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 hover:border-slate-300 transition" %>
+            class: "flex-1 text-center rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 hover:border-slate-300 hover:bg-slate-50 transition" %>
       <%= f.submit "Enviar proposta",
-            class: "flex-1 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 transition cursor-pointer" %>
+            class: "flex-1 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 active:scale-[0.98] transition cursor-pointer" %>
     </div>
+
+    <p class="text-center text-xs text-slate-400 pt-1">
+      Ao enviar, o contratante poderá ver seu perfil e entrar em contato com você.
+    </p>
   <% end %>
 </div>
