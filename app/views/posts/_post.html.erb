@@ -1,17 +1,15 @@
-<div id="<%= dom_id post %>" class="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm w-85 sm:w-120 md:w-175 mx-auto">
+<div id="<%= dom_id post %>" class="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm w-85 sm:w-120 md:w-175 mx-auto" data-controller="post-actions">
 
   <%# Cabeçalho %>
   <div class="w-full flex items-center gap-3 px-4 pt-4">
 
-    <%# Avatar com anel gradiente %>
     <div class="relative w-10 h-10 shrink-0">
       <div class="absolute inset-0 rounded-full bg-linear-to-br from-indigo-400 to-indigo-800"></div>
       <div class="absolute inset-0.5 rounded-full bg-indigo-50 flex items-center justify-center text-xs font-bold text-indigo-700 z-10">
-        <%= post.user&.initials rescue "EA" %>
+        <%= post.user&.full_name&.split&.map { |n| n[0] }&.join&.upcase rescue "EA" %>
       </div>
     </div>
 
-    <%# Nome + tempo %>
     <div class="flex-1 min-w-0">
       <p class="text-sm font-semibold text-gray-900 truncate leading-tight">
         <%= post.user&.full_name rescue "EA User" %>
@@ -21,37 +19,38 @@
       </p>
     </div>
 
-    <%# Menu de opções %>
-    <div class="relative" data-controller="dropdown">
-      <button
-        data-action="click->dropdown#toggle"
-        aria-label="Opções"
-        class="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition bg-transparent border-0 cursor-pointer"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 5h.01M12 12h.01M12 19h.01" />
-        </svg>
-      </button>
-
-      <div
-        data-dropdown-target="menu"
-        class="hidden absolute right-0 mt-1 w-36 bg-white rounded-xl border border-gray-100 shadow-lg py-1 z-10"
-      >
-        <button type="button"
-          data-action="click->posts-modal#openEdit"
-          data-post-id="<%= post.id %>"
-          data-post-title="<%= post.title %>"
-          data-post-description="<%= post.description %>"
-          data-post-job-id="<%= post.job_id %>"
-          data-post-attachments="<%= post.attachments.map { |a| { signed_id: a.signed_id, url: url_for(a), image: a.image? } }.to_json %>"
-          class="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition cursor-pointer bg-transparent border-0 text-left">
-          Editar
+    <%# Menu de opções — só aparece pro dono do post %>
+    <% if policy(post).update? || policy(post).destroy? %>
+      <div class="relative" data-controller="dropdown">
+        <button
+          data-action="click->dropdown#toggle"
+          aria-label="Opções"
+          class="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition bg-transparent border-0 cursor-pointer"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 5h.01M12 12h.01M12 19h.01" />
+          </svg>
         </button>
-        <%= button_to "Excluir", post, method: :delete,
-          class: "w-full flex items-center gap-2 px-3 py-2 text-sm text-red-500 hover:bg-red-50 transition cursor-pointer bg-transparent border-0",
-          data: { turbo_confirm: "Tem certeza?" } %>
+
+        <div data-dropdown-target="menu" class="hidden absolute right-0 mt-1 w-36 bg-white rounded-xl border border-gray-100 shadow-lg py-1 z-10">
+          <% if policy(post).update? %>
+            <button type="button"
+              data-action="click->dropdown#hide click->post-actions#openEdit"
+              class="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition cursor-pointer bg-transparent border-0 text-left">
+              Editar
+            </button>
+          <% end %>
+
+          <% if policy(post).destroy? %>
+            <button type="button"
+              data-action="click->dropdown#hide click->post-actions#openDelete"
+              class="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-500 hover:bg-red-50 transition cursor-pointer bg-transparent border-0 text-left">
+              Excluir
+            </button>
+          <% end %>
+        </div>
       </div>
-    </div>
+    <% end %>
   </div>
 
   <%# Título — antes da mídia %>
@@ -62,120 +61,64 @@
   <%# ── Chip de vaga vinculada ── %>
   <% if post.job.present? %>
     <div class="border border-indigo-100">
-
       <div class="flex items-start gap-3 p-4 transition-colors group">
-
         <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white border border-indigo-100 shadow-sm">
-          <svg xmlns="http://www.w3.org/2000/svg"
-              class="h-6 w-6 text-indigo-500"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              stroke-width="2">
-            <path stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
           </svg>
         </div>
-
         <div class="min-w-0 flex-1">
           <div class="flex items-center gap-2 flex-wrap">
-
             <h3 class="truncate text-lg font-semibold text-slate-900 transition-colors">
               <%= post.job.title %>
             </h3>
-
             <% if post.job.status == "open" %>
               <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-1 text-[11px] font-semibold text-emerald-700">
                 <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
                 Aberta
               </span>
             <% end %>
-
           </div>
-
         </div>
-
       </div>
 
       <div class="grid grid-cols-3 border-y border-indigo-100 bg-white">
         <div class="grid place-items-center border-r border-indigo-100 py-3">
-          <span class="text-base font-semibold text-indigo-700">
-          R$ <%= post.job.budget %>
-          </span>
-          <span class="text-xs text-slate-500">
-            Orçamento
-          </span>
+          <span class="text-base font-semibold text-indigo-700">R$ <%= post.job.budget %></span>
+          <span class="text-xs text-slate-500">Orçamento</span>
         </div>
-
         <div class="grid place-items-center border-r border-indigo-100 py-3">
-          <span class="text-base font-semibold text-indigo-700">
-            <%= post.job.human_status %>
-          </span>
-          <span class="text-xs text-slate-500">
-            Status
-          </span>
+          <span class="text-base font-semibold text-indigo-700"><%= post.job.human_status %></span>
+          <span class="text-xs text-slate-500">Status</span>
         </div>
-
         <div class="grid place-items-center py-3">
-          <span class="text-base font-semibold text-indigo-700">
-            3 dias
-          </span>
-          <span class="text-xs text-slate-500">
-            Propostas
-          </span>
+          <span class="text-base font-semibold text-indigo-700">3 dias</span>
+          <span class="text-xs text-slate-500">Propostas</span>
         </div>
       </div>
 
       <%= link_to job_path(post.job),
           class: "flex w-full items-center justify-center gap-2 border-t border-indigo-100 bg-white py-3 text-sm font-medium text-indigo-700 transition-colors hover:bg-indigo-50" do %>
-
-        <svg xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="2">
-          <path stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-          <path stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M2.458 12C3.732 7.943 7.523 5 12 5s8.268 2.943 9.542 7c-1.274 4.057-5.065 7-9.542 7S3.732 16.057 2.458 12z"/>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5s8.268 2.943 9.542 7c-1.274 4.057-5.065 7-9.542 7S3.732 16.057 2.458 12z"/>
         </svg>
-
         <span>Ver vaga</span>
-
       <% end %>
-
     </div>
   <% end %>
 
   <%# Carrossel de mídia %>
   <% if post.attachments.attached? %>
-    <section
-      class="relative bg-[#0f0f1a] overflow-hidden"
-      data-controller="post-carousel"
-      data-post-carousel-total-value="<%= post.attachments.count %>"
-    >
-      <%# Track %>
+    <section class="relative bg-[#0f0f1a] overflow-hidden" data-controller="post-carousel" data-post-carousel-total-value="<%= post.attachments.count %>">
       <div class="overflow-hidden">
-        <div
-          class="flex aspect-square transition-transform duration-300 ease-in-out"
-          data-post-carousel-target="track"
-        >
+        <div class="flex aspect-square transition-transform duration-300 ease-in-out" data-post-carousel-target="track">
           <% post.attachments.each do |attachment| %>
             <div class="w-full shrink-0 bg-[#1a1a2e]">
               <% if attachment.image? %>
-                <%= image_tag attachment,
-                    class: "w-full h-full object-cover select-none",
-                    draggable: false,
-                    alt: post.title %>
+                <%= image_tag attachment, class: "w-full h-full object-cover select-none", draggable: false, alt: post.title %>
               <% else %>
-                <%= video_tag url_for(attachment),
-                    controls: true,
-                    playsinline: true,
-                    class: "w-full h-full object-cover" %>
+                <%= video_tag url_for(attachment), controls: true, playsinline: true, class: "w-full h-full object-cover" %>
               <% end %>
             </div>
           <% end %>
@@ -183,41 +126,20 @@
       </div>
 
       <% if post.attachments.count > 1 %>
-        <%# Seta anterior %>
-        <button
-          type="button"
-          data-action="click->post-carousel#prev"
-          aria-label="Anterior"
-          class="absolute left-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/20 hover:bg-black/40 border border-white/20 text-white flex items-center justify-center backdrop-blur-sm transition z-10"
-        >
+        <button type="button" data-action="click->post-carousel#prev" aria-label="Anterior"
+          class="absolute left-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/20 hover:bg-black/40 border border-white/20 text-white flex items-center justify-center backdrop-blur-sm transition z-10">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-
-        <%# Seta próximo %>
-        <button
-          type="button"
-          data-action="click->post-carousel#next"
-          aria-label="Próximo"
-          class="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/20 hover:bg-black/40 border border-white/20 text-white flex items-center justify-center backdrop-blur-sm transition z-10"
-        >
+        <button type="button" data-action="click->post-carousel#next" aria-label="Próximo"
+          class="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/20 hover:bg-black/40 border border-white/20 text-white flex items-center justify-center backdrop-blur-sm transition z-10">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
           </svg>
         </button>
-
-        <%# Contador "1 / 3" %>
-        <div
-          data-post-carousel-target="counter"
-          class="absolute top-2.5 right-2.5 bg-black/50 border border-white/10 text-indigo-100 text-[11px] font-semibold px-2.5 py-0.5 rounded-full tracking-wide z-10"
-        ></div>
-
-        <%# Dots %>
-        <div
-          data-post-carousel-target="dots"
-          class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10"
-        ></div>
+        <div data-post-carousel-target="counter" class="absolute top-2.5 right-2.5 bg-black/50 border border-white/10 text-indigo-100 text-[11px] font-semibold px-2.5 py-0.5 rounded-full tracking-wide z-10"></div>
+        <div data-post-carousel-target="dots" class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10"></div>
       <% end %>
     </section>
   <% end %>
@@ -225,47 +147,226 @@
   <%# Descrição %>
   <% if post.description.present? %>
     <div class="px-4 pt-3">
-      <p class="text-[18px] leading-relaxed text-gray-600 whitespace-pre-line">
-        <%= post.description %>
-      </p>
+      <p class="text-[18px] leading-relaxed text-gray-600 whitespace-pre-line"><%= post.description %></p>
     </div>
   <% end %>
 
   <%# Ações %>
   <div class="flex items-center gap-1 px-2 py-3 mt-2 border-t border-gray-100">
-
-    <button
-      class="flex items-center gap-1.5 text-md font-medium text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 px-3 py-1.5 rounded-lg transition border-0 bg-transparent cursor-pointer"
-      data-controller="like"
-      data-action="click->like#toggle"
-      aria-label="Curtir"
-    >
+    <button class="flex items-center gap-1.5 text-md font-medium text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 px-3 py-1.5 rounded-lg transition border-0 bg-transparent cursor-pointer"
+      data-controller="like" data-action="click->like#toggle" aria-label="Curtir">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" data-like-target="icon">
         <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
       </svg>
       Curtir
     </button>
 
-    <button
-      class="flex items-center gap-1.5 text-md font-medium text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 px-3 py-1.5 rounded-lg transition border-0 bg-transparent cursor-pointer"
-      aria-label="Comentar"
-    >
+    <button class="flex items-center gap-1.5 text-md font-medium text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 px-3 py-1.5 rounded-lg transition border-0 bg-transparent cursor-pointer" aria-label="Comentar">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
         <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
       </svg>
       Comentar
     </button>
 
-    <button
-      class="flex items-center gap-1.5 text-md font-medium text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 px-3 py-1.5 rounded-lg transition border-0 bg-transparent cursor-pointer ml-auto"
-      aria-label="Compartilhar"
-    >
+    <button class="flex items-center gap-1.5 text-md font-medium text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 px-3 py-1.5 rounded-lg transition border-0 bg-transparent cursor-pointer ml-auto" aria-label="Compartilhar">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
         <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
       </svg>
       Compartilhar
     </button>
-
   </div>
+
+  <%# ══════════ DIALOG: EDITAR (fica FORA do menu, direto no card) ══════════ %>
+  <% if policy(post).update? %>
+    <dialog data-post-actions-target="editDialog"
+            data-action="click->post-actions#closeOnBackdrop"
+            class="backdrop:bg-black/40 backdrop:backdrop-blur-sm rounded-2xl border-0 shadow-2xl p-0 w-11/12 max-w-lg m-auto overflow-hidden">
+
+      <%= form_with model: post, local: true, multipart: true do |form| %>
+
+        <%# ── Cabeçalho ── %>
+        <div class="flex items-center gap-3 px-5 pt-5 pb-4 border-b border-gray-100">
+          <div class="relative w-9 h-9 shrink-0">
+            <div class="absolute inset-0 rounded-full bg-linear-to-br from-indigo-400 to-indigo-800"></div>
+            <div class="absolute inset-0.5 rounded-full bg-indigo-50 flex items-center justify-center text-xs font-bold text-indigo-700 z-10">
+              <%= current_user.initials rescue "EA" %>
+            </div>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-semibold text-gray-900 leading-tight">Editar publicação</p>
+            <p class="text-xs text-gray-400 mt-0.5">Atualize os detalhes do seu post</p>
+          </div>
+          <button type="button" data-action="click->post-actions#closeEdit" aria-label="Fechar"
+            class="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition bg-transparent border-0 cursor-pointer shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <%# ── Corpo (scrollável se o conteúdo crescer) ── %>
+        <div class="px-5 py-4 max-h-[70vh] overflow-y-auto">
+
+          <%# Título %>
+          <div class="mb-4">
+            <label class="block text-xs font-semibold text-gray-500 mb-1.5 tracking-wide">Título</label>
+            <%= form.text_field :title,
+                  placeholder: "Dê um título para sua publicação",
+                  class: "block w-full rounded-xl border border-gray-200 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 outline-none transition" %>
+          </div>
+
+          <%# Descrição %>
+          <div class="mb-5">
+            <label class="block text-xs font-semibold text-gray-500 mb-1.5 tracking-wide">Descrição</label>
+            <%= form.text_area :description,
+                  rows: 3,
+                  placeholder: "O que você quer compartilhar?",
+                  class: "block w-full rounded-xl border border-gray-200 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 outline-none transition resize-none" %>
+          </div>
+
+          <%# Anexos atuais %>
+          <% if post.attachments.attached? %>
+            <div class="mb-5">
+              <div class="flex items-center justify-between mb-2">
+                <label class="block text-xs font-semibold text-gray-500 tracking-wide">Anexos atuais</label>
+                <span class="text-[11px] text-gray-400">Clique para marcar remoção</span>
+              </div>
+              <div class="grid grid-cols-4 gap-2.5">
+                <% post.attachments.each do |attachment| %>
+                  <label class="group relative aspect-square rounded-xl overflow-hidden border border-gray-200 cursor-pointer block has-[:checked]:ring-2 has-[:checked]:ring-red-400 has-[:checked]:border-red-400">
+                    <% if attachment.image? %>
+                      <%= image_tag attachment, class: "w-full h-full object-cover transition group-has-[:checked]:opacity-40 group-has-[:checked]:grayscale" %>
+                    <% else %>
+                      <div class="w-full h-full flex items-center justify-center bg-gray-800 text-white text-[11px] font-medium transition group-has-[:checked]:opacity-40">
+                        Vídeo
+                      </div>
+                    <% end %>
+
+                    <input type="checkbox" name="post[remove_attachment_signed_ids][]" value="<%= attachment.signed_id %>"
+                          class="peer sr-only">
+
+                    <span class="absolute inset-0 flex items-center justify-center opacity-0 peer-checked:opacity-100 transition bg-red-500/20">
+                      <span class="w-6 h-6 rounded-full bg-red-500 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </span>
+                    </span>
+                  </label>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+
+          <%# Novos anexos %>
+          <div class="mb-5">
+            <label class="block text-xs font-semibold text-gray-500 mb-1.5 tracking-wide">Adicionar novos anexos</label>
+            <label class="group flex items-center gap-3 px-3.5 py-3 rounded-xl border border-dashed border-gray-300 hover:border-indigo-400 hover:bg-indigo-50/50 transition-all duration-150 cursor-pointer">
+              <span class="w-8 h-8 rounded-lg bg-gray-100 group-hover:bg-indigo-100 flex items-center justify-center shrink-0 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 group-hover:text-indigo-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                </svg>
+              </span>
+              <span class="text-sm text-gray-500 group-hover:text-indigo-600 transition-colors">Escolher fotos ou vídeos</span>
+              <%= form.file_field :attachments, multiple: true, include_hidden: false, class: "hidden" %>
+            </label>
+          </div>
+
+          <%# Vaga vinculada %>
+          <% user_jobs = current_user.jobs.order(created_at: :desc) rescue [] %>
+          <% if user_jobs.any? %>
+            <div class="mb-1">
+              <label class="block text-xs font-semibold text-gray-500 mb-1.5 tracking-wide">Vaga vinculada</label>
+              <div class="relative">
+                <%= form.select :job_id,
+                      options_from_collection_for_select(user_jobs, :id, :title, post.job_id),
+                      { include_blank: "Nenhuma vaga vinculada" },
+                      class: "block w-full appearance-none rounded-xl border border-gray-200 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 px-3.5 py-2.5 pr-9 text-sm text-gray-900 outline-none transition bg-white cursor-pointer" %>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </div>
+          <% end %>
+        </div>
+
+        <%# ── Rodapé ── %>
+        <div class="flex justify-end gap-2 px-5 py-4 border-t border-gray-100 bg-gray-50/60">
+          <button type="button" data-action="click->post-actions#closeEdit"
+                  class="rounded-xl px-4 py-2.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 transition cursor-pointer">
+            Cancelar
+          </button>
+          <%= form.submit "Salvar alterações", class: "rounded-xl px-4 py-2.5 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-500 transition cursor-pointer border-0" %>
+        </div>
+      <% end %>
+    </dialog>
+  <% end %>
+
+  <%# ══════════ DIALOG: EXCLUIR (fica FORA do menu, direto no card) ══════════ %>
+  <% if policy(post).destroy? %>
+    <dialog data-post-actions-target="deleteDialog"
+        data-action="click->post-actions#closeOnBackdrop"
+        class="backdrop:bg-black/40 backdrop:backdrop-blur-sm rounded-2xl border-0 shadow-2xl p-0 w-11/12 max-w-sm m-auto overflow-hidden">
+
+  <%# ── Botão de fechar ── %>
+  <div class="flex justify-end px-4 pt-4">
+    <button type="button" data-action="click->post-actions#closeDelete" aria-label="Fechar"
+      class="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition bg-transparent border-0 cursor-pointer">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+
+  <div class="px-6 pb-6 -mt-2">
+
+    <%# Ícone %>
+    <div class="flex items-center justify-center w-14 h-14 rounded-2xl bg-red-50 mx-auto mb-4 ring-8 ring-red-50/50">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+      </svg>
+    </div>
+
+    <h3 class="text-center text-lg font-semibold text-gray-900">
+      Excluir publicação?
+    </h3>
+    <p class="text-center text-sm text-gray-500 mt-1.5 leading-relaxed">
+      Essa ação é permanente e não pode ser desfeita.
+      Comentários e curtidas também serão perdidos.
+    </p>
+
+    <%# Preview do post que será excluído %>
+    <div class="flex items-center gap-3 mt-5 p-3 rounded-xl bg-gray-50 border border-gray-100">
+      <% if post.attachments.attached? && post.attachments.first.image? %>
+        <%= image_tag post.attachments.first, class: "w-11 h-11 rounded-lg object-cover shrink-0" %>
+      <% else %>
+        <div class="w-11 h-11 rounded-lg bg-gray-200 flex items-center justify-center shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487a2.625 2.625 0 113.712 3.712L7.5 21H3v-4.5L16.862 4.487z" />
+          </svg>
+        </div>
+      <% end %>
+      <div class="min-w-0 flex-1">
+        <p class="text-sm font-medium text-gray-800 truncate leading-tight">
+          <%= post.title %>
+        </p>
+        <p class="text-xs text-gray-400 mt-0.5">
+          Publicado há <%= time_ago_in_words(post.created_at) %>
+        </p>
+      </div>
+    </div>
+
+    <%# Ações %>
+    <div class="flex gap-3 mt-6">
+      <button type="button" data-action="click->post-actions#closeDelete"
+        class="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition bg-white cursor-pointer">
+        Cancelar
+      </button>
+      <%= button_to "Sim, excluir", post, method: :delete,
+            class: "flex-1 py-2.5 rounded-xl bg-red-500 text-sm font-semibold text-white hover:bg-red-600 active:scale-[0.98] transition border-0 cursor-pointer" %>
+    </div>
+  </div>
+</dialog>
+  <% end %>
 
 </div>

@@ -1,4 +1,3 @@
-# app/controllers/posts_controller.rb
 class PostsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_post, only: %i[show edit update destroy]
@@ -6,7 +5,7 @@ class PostsController < ApplicationController
 
   # GET /posts
   def index
-    @posts = Post.all.order(created_at: :desc)
+    @posts = policy_scope(Post).order(created_at: :desc)
   end
 
   # GET /posts/1
@@ -16,6 +15,7 @@ class PostsController < ApplicationController
   # GET /posts/new
   def new
     @post = Post.new
+    authorize @post
   end
 
   # GET /posts/1/edit
@@ -26,6 +26,7 @@ class PostsController < ApplicationController
   def create
     @post = Post.new(post_params)
     @post.user = current_user
+    authorize @post
 
     respond_to do |format|
       if @post.save
@@ -102,9 +103,9 @@ class PostsController < ApplicationController
     @post = Post.find(params[:id])
   end
 
-  # Garante que só o dono pode editar/deletar
+  # Autorização via Pundit
   def authorize_post!
-    redirect_to posts_path, alert: "Não autorizado." unless @post.user == current_user
+    authorize @post
   end
 
   def post_params

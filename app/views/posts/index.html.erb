@@ -1,6 +1,6 @@
 <% content_for :title, "Publicações" %>
 
-<div class="max-w-7xl mx-auto my-7 pb-24" data-controller="posts-modal" data-posts-modal-posts-path-value="<%= posts_path %>">
+<div class="max-w-7xl mx-auto my-7 pb-24" data-controller="posts-modal">
 
   <%# Notificação de sucesso %>
   <% if notice.present? %>
@@ -50,19 +50,19 @@
     </svg>
   </button>
 
-  <%# ── Modal — bottom sheet (criação + edição) ── %>
+  <%# ── Modal — bottom sheet (apenas criação) ── %>
   <div data-posts-modal-target="overlay"
        class="fixed inset-0 z-40 hidden"
        aria-modal="true" role="dialog">
 
     <%# Backdrop %>
-    <div data-action="click->posts-modal#close" class="absolute inset-0 bg-black/40"></div>
+    <div data-action="click->posts-modal#closeOnOverlay" class="absolute inset-0 bg-black/40"></div>
 
     <%# Sheet %>
     <div data-posts-modal-target="sheet"
          class="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl border-t border-gray-200 translate-y-full transition-all duration-300">
 
-      <%# Handle + título do modal %>
+      <%# Handle %>
       <div class="flex justify-center pt-3 pb-1">
         <div class="w-9 h-1 rounded-full bg-gray-200"></div>
       </div>
@@ -76,20 +76,17 @@
             </div>
             <div>
               <p class="text-sm font-medium text-gray-900"><%= current_user.name rescue "EA User" %></p>
-              <p class="text-xs text-gray-400" data-posts-modal-target="modeLabel">Nova publicação</p>
+              <p class="text-xs text-gray-400">Nova publicação</p>
             </div>
           </div>
         </div>
 
-        <%# Formulário (ação trocada via JS para edit) %>
+        <%# Formulário de criação %>
         <%= form_with(model: Post.new,
               data: {
                 action: "submit->posts-modal#submit",
                 posts_modal_target: "formEl"
               }) do |form| %>
-
-          <%# Campo oculto para sobrescrever método HTTP em edição %>
-          <input type="hidden" name="_method" value="post" data-posts-modal-target="methodInput">
 
           <%# Título %>
           <div class="mb-3">
@@ -108,15 +105,8 @@
                   class: "block w-full rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 outline-none transition resize-none" %>
           </div>
 
-          <%# ── Attachments: existentes (edição) + novos ── %>
+          <%# ── Novos anexos ── %>
           <div data-controller="media-picker" class="mb-4">
-
-            <%# Miniaturas de attachments já salvos (só aparecem em modo edição) %>
-            <div data-posts-modal-target="existingGrid" class="hidden grid grid-cols-4 gap-2 mb-2">
-              <%# Populado via JS com thumbnails + botão de remoção %>
-            </div>
-
-            <%# Picker de novos arquivos %>
             <%= form.file_field :attachments,
                   multiple: true,
                   include_hidden: false,
@@ -230,7 +220,7 @@
                     class="rounded-lg px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition cursor-pointer border-0">
               Cancelar
             </button>
-            <button type="submit" data-posts-modal-target="submitBtn"
+            <button type="submit"
                     class="rounded-lg px-4 py-2 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-500 transition cursor-pointer border-0">
               Publicar
             </button>
