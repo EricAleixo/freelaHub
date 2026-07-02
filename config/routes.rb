@@ -8,7 +8,7 @@ Rails.application.routes.draw do
   get "profile/:username", to: "profiles#show",   as: :profile
   patch "profile", to: "profiles#update", as: :update_profile
   put   "profile", to: "profiles#update"
-
+  
   resources :jobs do
     collection do
       get :my_jobs
@@ -22,11 +22,14 @@ Rails.application.routes.draw do
   end
 
   resources :notifications, only: [:index, :destroy]
-
+  
   devise_for :users, controllers: {
     sessions: "users/sessions",
     registrations: "users/registrations"
   }
-
+  devise_scope :user do
+    get "check_username", to: "users/registrations#check_username"
+  end
+  
   get "up" => "rails/health#show", as: :rails_health_check
 end

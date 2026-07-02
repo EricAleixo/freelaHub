@@ -1,13 +1,15 @@
 import { Controller } from "@hotwired/stimulus"
-3.
+
 export default class extends Controller {
   static targets = [
     "step",
     "progressBar",
+    "progressLine",
     "progressLabel",
     "fullName",
     "email",
     "username",
+    "usernameStatus",
     "password",
     "passwordConfirmation",
     "roleInput",
@@ -23,6 +25,8 @@ export default class extends Controller {
   static values = { current: { type: Number, default: 1 } }
 
   connect() {
+    this.usernameAvailable = true
+    this.usernameCheckTimeout = null
     this.showStep(this.currentValue)
   }
 
@@ -52,15 +56,29 @@ export default class extends Controller {
   }
 
   updateProgress(stepNumber) {
-    if (this.hasProgressLabelTarget) {
-      this.progressLabelTarget.textContent = `Etapa ${stepNumber} de 3`
-    }
+    this.progressBarTargets.forEach((circle) => {
+      const circleStep = Number(circle.dataset.step)
+      const isActiveOrDone = circleStep <= stepNumber
 
-    this.progressBarTargets.forEach((bar) => {
-      const barStep = Number(bar.dataset.step)
-      bar.classList.toggle("bg-indigo-500", barStep <= stepNumber)
-      bar.classList.toggle("bg-slate-200", barStep > stepNumber)
+      circle.classList.toggle("bg-indigo-600", isActiveOrDone)
+      circle.classList.toggle("text-white", isActiveOrDone)
+      circle.classList.toggle("bg-indigo-100", !isActiveOrDone)
+      circle.classList.toggle("text-indigo-400", !isActiveOrDone)
     })
+
+    this.progressLabelTargets.forEach((label) => {
+      const labelStep = Number(label.dataset.step)
+      label.classList.toggle("text-indigo-600", labelStep <= stepNumber)
+      label.classList.toggle("text-slate-500", labelStep > stepNumber)
+    })
+
+    if (this.hasProgressLineTarget) {
+      this.progressLineTargets.forEach((line) => {
+        const lineStep = Number(line.dataset.step)
+        line.classList.toggle("bg-indigo-500", lineStep < stepNumber)
+        line.classList.toggle("bg-slate-200", lineStep >= stepNumber)
+      })
+    }
   }
 
   // ── Validação por passo ────────────────────────────────
@@ -77,19 +95,27 @@ export default class extends Controller {
     let valid = true
 
     if (!this.fullNameTarget.value.trim()) {
-      this.markInvalid(this.fullNameTarget, "Please enter your full name.")
+      this.markInvalid(this.fullNameTarget, "Informe seu nome completo.")
+      valid = false
+    }
+
+    if (!this.usernameTarget.value.trim()) {
+      this.markInvalid(this.usernameTarget, "Coloque um nome de usuário.")
+      valid = false
+    } else if (!this.usernameAvailable) {
+      this.markInvalid(this.usernameTarget, "Este nome de usuário já existe.")
       valid = false
     }
 
     const emailValue = this.emailTarget.value.trim()
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailPattern.test(emailValue)) {
-      this.markInvalid(this.emailTarget, "Please enter a valid email address.")
+      this.markInvalid(this.emailTarget, "Informe um e-mail válido.")
       valid = false
     }
 
-    if (!this.usernameTarget.value.trim()) {
-      this.markInvalid(this.usernameTarget, "Coloque um username")
+    if (this.passwordTarget.value.length < 8) {
+      this.markInvalid(this.passwordTarget, "A senha deve ter no mínimo 8 caracteres.")
       valid = false
     }
 
@@ -98,7 +124,7 @@ export default class extends Controller {
 
   validateStepTwo() {
     if (!this.roleInputTarget.value) {
-      this.showStepTwoError("Please choose how you'll use FreelaHub.")
+      this.showStepTwoError("Selecione como você irá usar o FreelaHub.")
       return false
     }
     return true
@@ -132,7 +158,62 @@ export default class extends Controller {
     }
   }
 
-  // ── Força da senha (Step 3) ────────────────────────────
+  // ── Disponibilidade do username (Step 1) ───────────────
+
+  checkUsernameAvailability() {
+    clearTimeout(this.usernameCheckTimeout)
+
+    const value = this.usernameTarget.value.trim()
+
+    if (!this.hasUsernameStatusTarget) return
+
+    if (!value) {
+      this.usernameAvailable = true
+      this.usernameStatusTarget.textContent = ""
+      this.usernameStatusTarget.classList.add("hidden")
+      return
+    }
+
+    this.usernameStatusTarget.textContent = "Verificando disponibilidade..."
+    this.usernameStatusTarget.classList.remove("hidden", "text-red-500", "text-emerald-600")
+    this.usernameStatusTarget.classList.add("text-slate-400")
+
+    this.usernameCheckTimeout = setTimeout(() => {
+      this.fetchUsernameAvailability(value)
+    }, 450)
+  }
+
+  async fetchUsernameAvailability(username) {
+    try {
+      const response = await fetch(`/check_username?username=${encodeURIComponent(username)}`, {
+        headers: { "Accept": "application/json" }
+      })
+
+      if (!response.ok) throw new Error("Falha na verificação")
+
+      const data = await response.json()
+
+      // Ignora resposta se o usuário já mudou o campo
+      if (this.usernameTarget.value.trim() !== username) return
+
+      this.usernameAvailable = !data.exists
+
+      this.usernameStatusTarget.classList.remove("text-slate-400", "text-red-500", "text-emerald-600")
+
+      if (data.exists) {
+        this.usernameStatusTarget.textContent = "Este nome de usuário já existe."
+        this.usernameStatusTarget.classList.add("text-red-500")
+      } else {
+        this.usernameStatusTarget.textContent = "Nome de usuário disponível."
+        this.usernameStatusTarget.classList.add("text-emerald-600")
+      }
+    } catch (error) {
+      this.usernameAvailable = true
+      this.usernameStatusTarget.classList.add("hidden")
+    }
+  }
+
+  // ── Força da senha (Step 1) ────────────────────────────
 
   checkPasswordStrength() {
     const value = this.passwordTarget.value
@@ -169,10 +250,6 @@ export default class extends Controller {
 
   // ── Mostrar/ocultar senha ──────────────────────────────
 
-  togglePassword() {
-    this.togglePasswordVisibility(this.passwordTarget, this.passwordToggleTarget)
-  }
-
   togglePasswordConfirmation() {
     this.togglePasswordVisibility(this.passwordConfirmationTarget, this.passwordConfirmToggleTarget)
   }
@@ -186,10 +263,23 @@ export default class extends Controller {
   // ── Submit final ───────────────────────────────────────
 
   beforeSubmit(event) {
-    if (!this.termsTarget.checked) {
-      event.preventDefault()
-      this.showTermsError()
+    let valid = true
+
+    if (this.passwordTarget.value !== this.passwordConfirmationTarget.value) {
+      this.markInvalid(this.passwordConfirmationTarget, "As senhas não coincidem.")
+      valid = false
     }
+
+    if (!this.termsTarget.checked) {
+      this.showTermsError()
+      valid = false
+    }
+
+    if (!this.usernameAvailable) {
+      valid = false
+    }
+
+    if (!valid) event.preventDefault()
   }
 
   showTermsError() {
@@ -197,7 +287,7 @@ export default class extends Controller {
     if (errorEl) errorEl.classList.remove("hidden")
   }
 
-  // ── Helpers de erro (Step 1) ───────────────────────────
+  // ── Helpers de erro ─────────────────────────────────────
 
   markInvalid(input, message) {
     input.classList.add("border-red-400", "focus:ring-red-200", "focus:border-red-400")

@@ -7,6 +7,8 @@ class User < ApplicationRecord
   has_one :profile, dependent: :destroy
   has_many :jobs, dependent: :destroy
   has_many :notifications, dependent: :destroy
+  
+  validates :username, presence: true, uniqueness: { case_sensitive: false }
 
   after_create :build_default_profile
 

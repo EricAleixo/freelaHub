@@ -37,8 +37,16 @@
         data-dropdown-target="menu"
         class="hidden absolute right-0 mt-1 w-36 bg-white rounded-xl border border-gray-100 shadow-lg py-1 z-10"
       >
-        <%= link_to "Editar", edit_post_path(post),
-          class: "flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-gray-50 transition" %>
+        <button type="button"
+          data-action="click->posts-modal#openEdit"
+          data-post-id="<%= post.id %>"
+          data-post-title="<%= post.title %>"
+          data-post-description="<%= post.description %>"
+          data-post-job-id="<%= post.job_id %>"
+          data-post-attachments="<%= post.attachments.map { |a| { signed_id: a.signed_id, url: url_for(a), image: a.image? } }.to_json %>"
+          class="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition cursor-pointer bg-transparent border-0 text-left">
+          Editar
+        </button>
         <%= button_to "Excluir", post, method: :delete,
           class: "w-full flex items-center gap-2 px-3 py-2 text-sm text-red-500 hover:bg-red-50 transition cursor-pointer bg-transparent border-0",
           data: { turbo_confirm: "Tem certeza?" } %>

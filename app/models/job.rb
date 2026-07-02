@@ -3,6 +3,7 @@ class Job < ApplicationRecord
   has_many :proposals, dependent: :destroy
   has_many :posts, dependent: :nullify
   enum status: { draft: 0, open: 1, paused: 2, closed: 3 }
+  
   validates :title, presence: true
   validates :description, presence: true
   validates :budget, numericality: { greater_than: 0 }, allow_nil: true

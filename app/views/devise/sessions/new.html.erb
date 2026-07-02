@@ -1,15 +1,21 @@
-<div class="min-h-screen flex font-sans">
+<div class="min-h-screen flex font-sans" data-controller="login-form">
 
   <%# ── Painel esquerdo ── %>
   <div class="hidden lg:flex lg:w-[46%] xl:w-[48%] shrink-0 relative flex-col justify-between p-12 overflow-hidden"
-       style="background: linear-gradient(160deg, #0f1535 0%, #1a2260 55%, #0f1535 100%);">
+       style="background: linear-gradient(155deg, #0d1333 0%, #1e2a6e 50%, #0d1333 100%);">
 
-    <%# Textura sutil de pontos %>
-    <div class="absolute inset-0 opacity-[0.07]"
-         style="background-image: radial-gradient(#a5b4fc 1px, transparent 1px); background-size: 28px 28px;"></div>
+    <%# Grade de pontos %>
+    <div class="absolute inset-0 opacity-[0.06]"
+         style="background-image: radial-gradient(#a5b4fc 1px, transparent 1px); background-size: 26px 26px;"></div>
+
+    <%# Círculos decorativos de brilho %>
+    <div class="absolute -top-20 -right-20 w-80 h-80 rounded-full opacity-10"
+         style="background: radial-gradient(circle, #818cf8, transparent 70%);"></div>
+    <div class="absolute bottom-[-60px] left-[-60px] w-72 h-72 rounded-full opacity-10"
+         style="background: radial-gradient(circle, #6366f1, transparent 70%);"></div>
 
     <%# Logo %>
-    <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-center gap-3">
+    <div class="px-6 py-4 flex items-center gap-3">
       <%= image_tag "logo.svg", class: "w-15" %>
 
       <h1 class="text-3xl font-bold tracking-tight">
@@ -19,53 +25,77 @@
 
     <%# Headline central %>
     <div class="relative z-10">
-      <h2 class="text-4xl xl:text-5xl font-bold text-white leading-tight tracking-tight">
-        Conectando talentos<br>a oportunidades<br>reais.
+      <div class="inline-flex items-center gap-2 bg-indigo-500/20 border border-indigo-400/30 rounded-full px-3.5 py-1.5 mb-6">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="text-indigo-200 text-xs font-medium">10.000+ talentos ativos</span>
+      </div>
+
+      <h2 class="text-4xl xl:text-5xl font-bold text-white leading-[1.15] tracking-tight">
+        Conectando<br>talentos a<br>
+        <span class="text-transparent bg-clip-text"
+              style="background-image: linear-gradient(90deg, #818cf8, #a78bfa);">
+          oportunidades<br>reais.
+        </span>
       </h2>
-      <p class="mt-5 text-slate-400 text-base leading-relaxed max-w-xs">
+
+      <p class="mt-5 text-slate-400 text-sm leading-relaxed max-w-xs">
         A plataforma SaaS definitiva para acadêmicos e profissionais que buscam excelência em cada contrato.
       </p>
     </div>
 
-    <%# Rodapé com avatares %>
-    <div class="relative z-10 flex items-center gap-4">
-      <%# Grupo de avatares em CSS %>
-      <div class="flex -space-x-2">
-        <% [["#6366f1","A"], ["#8b5cf6","B"], ["#a78bfa","C"]].each do |color, letter| %>
-          <div class="w-9 h-9 rounded-full border-2 border-[#1a2260] flex items-center justify-center text-white text-xs font-semibold"
-               style="background-color: <%= color %>;">
-            <%= letter %>
-          </div>
+    <%# Testemunho %>
+    <div class="relative z-10 bg-white/5 border border-white/10 rounded-2xl p-5">
+      <div class="flex items-center gap-1 mb-3">
+        <% 5.times do %>
+          <svg class="w-3.5 h-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+          </svg>
         <% end %>
       </div>
-      <p class="text-slate-300 text-sm font-medium">Mais de 10k+ talentos ativos</p>
+      <p class="text-slate-300 text-sm leading-relaxed">
+        "Consegui meu primeiro contrato internacional em menos de duas semanas. A plataforma é simplesmente extraordinária."
+      </p>
+      <div class="flex items-center gap-3 mt-4">
+        <div class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-white text-xs font-bold">M</div>
+        <div>
+          <p class="text-white text-xs font-semibold">Marina Souza</p>
+          <p class="text-slate-400 text-xs">Designer UX · São Paulo</p>
+        </div>
+      </div>
     </div>
   </div>
 
-  <%# ── Painel direito (formulário) ── %>
+  <%# ── Painel direito ── %>
   <div class="flex-1 flex items-center justify-center bg-white px-8 py-12">
     <div class="w-full max-w-md">
 
-      <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Bem-vindo de volta</h1>
-      <p class="text-slate-500 text-sm mt-2 mb-8">Insira suas credenciais para acessar sua conta.</p>
+      <%# Logo mobile (só aparece em telas pequenas) %>
+      <div class="flex items-center gap-2 justify-center mb-8 lg:hidden">
+        <div class="w-8 h-8 rounded-lg bg-indigo-50 border border-indigo-200 flex items-center justify-center">
+          <span class="text-indigo-600 font-bold text-sm leading-none">F</span>
+        </div>
+        <span class="text-slate-900 font-bold text-sm tracking-tight">FreelaHub</span>
+      </div>
+
+      <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Bem-vindo de volta</h1>
+      <p class="text-slate-500 text-sm mt-1.5 mb-7">Insira suas credenciais para acessar sua conta.</p>
 
       <%# Botão Google %>
       <%= link_to "#",
-            class: "flex items-center justify-center gap-3 w-full py-3 border border-slate-200 rounded-xl text-slate-700 text-sm font-medium hover:bg-slate-50 transition mb-6" do %>
-        <%# Ícone Google em SVG inline %>
-        <svg class="w-5 h-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            class: "flex items-center justify-center gap-3 w-full py-2.5 border border-slate-200 rounded-xl text-slate-700 text-sm font-medium hover:bg-slate-50 active:bg-slate-100 transition mb-5" do %>
+        <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
           <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
           <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
           <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
         </svg>
-        Continue com Google
+        Continuar com Google
       <% end %>
 
       <%# Divisor %>
-      <div class="flex items-center gap-3 mb-6 text-slate-400 text-xs">
+      <div class="flex items-center gap-3 mb-5 text-slate-400 text-xs">
         <span class="flex-1 h-px bg-slate-200"></span>
-        ou use seu e-mail
+        ou continue com e-mail
         <span class="flex-1 h-px bg-slate-200"></span>
       </div>
 
@@ -76,34 +106,54 @@
         <div class="mb-4">
           <%= f.label :email, "E-mail",
                 class: "block text-sm font-medium text-slate-700 mb-1.5" %>
-          <%= f.email_field :email,
-                autofocus: true,
-                autocomplete: "email",
-                placeholder: "exemplo@freelahub.com",
-                class: "w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition" %>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-3.5 flex items-center pointer-events-none text-slate-400">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+              </svg>
+            </span>
+            <%= f.email_field :email,
+                  autofocus: true,
+                  autocomplete: "email",
+                  placeholder: "exemplo@freelahub.com",
+                  class: "w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 focus:bg-white transition" %>
+          </div>
         </div>
 
         <%# Senha %>
         <div class="mb-5">
           <div class="flex justify-between items-center mb-1.5">
-            <%= f.label :password, "Senha",
-                  class: "text-sm font-medium text-slate-700" %>
+            <%= f.label :password, "Senha", class: "text-sm font-medium text-slate-700" %>
             <% if devise_mapping.recoverable? && controller_name != "passwords" && controller_name != "registrations" %>
               <%= link_to "Esqueceu a senha?", new_password_path(resource_name),
                     class: "text-xs text-indigo-500 hover:text-indigo-700 font-medium transition" %>
             <% end %>
           </div>
           <div class="relative">
+            <span class="absolute inset-y-0 left-3.5 flex items-center pointer-events-none text-slate-400">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+              </svg>
+            </span>
             <%= f.password_field :password,
                   autocomplete: "current-password",
-                  class: "w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition pr-11" %>
-            <%# Ícone de olho (decorativo) %>
-            <span class="absolute inset-y-0 right-3 flex items-center text-slate-400 pointer-events-none">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                  placeholder: "••••••••",
+                  data: { login_form_target: "passwordInput" },
+                  class: "w-full pl-10 pr-11 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 focus:bg-white transition" %>
+            <button type="button"
+                    data-action="login-form#togglePassword"
+                    data-login-form-target="passwordToggle"
+                    class="absolute inset-y-0 right-3 flex items-center text-slate-400 hover:text-slate-600 transition">
+              <%# Ícone "olho fechado" (padrão — senha oculta) %>
+              <svg data-login-form-target="eyeOff" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
+              </svg>
+              <%# Ícone "olho aberto" (escondido por padrão) %>
+              <svg data-login-form-target="eyeOn" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/>
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
               </svg>
-            </span>
+            </button>
           </div>
         </div>
 
@@ -111,15 +161,15 @@
         <% if devise_mapping.rememberable? %>
           <div class="flex items-center gap-2 mb-6">
             <%= f.check_box :remember_me,
-                  class: "w-4 h-4 rounded border-slate-300 text-indigo-500 focus:ring-indigo-400 cursor-pointer" %>
+                  class: "w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-400 cursor-pointer" %>
             <%= f.label :remember_me, "Lembrar de mim",
-                  class: "text-sm text-slate-600 cursor-pointer" %>
+                  class: "text-sm text-slate-600 cursor-pointer select-none" %>
           </div>
         <% end %>
 
         <%# Submit %>
         <%= f.submit "Entrar",
-              class: "w-full py-3 bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 text-white text-sm font-semibold rounded-xl transition cursor-pointer shadow-sm shadow-indigo-200" %>
+              class: "w-full py-3 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-sm font-semibold rounded-xl transition cursor-pointer shadow-sm shadow-indigo-200" %>
 
       <% end %>
 
@@ -127,12 +177,12 @@
       <p class="text-center text-sm text-slate-500 mt-6">
         Não tem uma conta?
         <%= link_to "Criar conta", new_user_registration_path,
-              class: "text-indigo-500 font-semibold hover:text-indigo-700 transition" %>
+              class: "text-indigo-600 font-semibold hover:text-indigo-700 transition" %>
       </p>
 
       <%# Selo SSL %>
       <p class="flex items-center justify-center gap-1.5 mt-8 text-slate-400 text-xs">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/>
         </svg>
         Conexão segura SSL de 256 bits
