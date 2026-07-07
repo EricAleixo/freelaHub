@@ -14,6 +14,8 @@ module FreelaHub
     config.i18n.default_locale = :'pt-BR'
     config.i18n.available_locales = [:'pt-BR', :en]
 
+    config.active_storage.service = :cloudinary
+
     config.generators do |g|
       g.orm :active_record, primary_key_type: :uuid
     end
